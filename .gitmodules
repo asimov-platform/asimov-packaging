@@ -1,3 +1,6 @@
 [submodule "homebrew"]
 	path = homebrew
 	url = https://github.com/asimov-platform/homebrew-tap.git
+[submodule "scoop"]
+	path = scoop
+	url = https://github.com/asimov-platform/scoop-bucket.git
