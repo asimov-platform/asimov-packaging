@@ -1,0 +1,68 @@
+name: Snap build & test
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'snap/**'
+  pull_request:
+    paths:
+      - 'snap/**'
+
+jobs:
+  build-snap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Install Snapcraft
+        run: sudo snap install snapcraft --classic
+
+      - name: Pre-install core22
+        run: sudo snap install core22 --channel=latest/stable
+
+      - name: Build Snap (Destructive Mode)
+        working-directory: snap
+        run: |
+          snapcraft --destructive-mode
+          ls -lh *.snap
+
+      - name: Upload Snap Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: asimov-cli-snap
+          path: "snap/*.snap"
+
+      - name: Install Snap Package
+        run: sudo snap install --dangerous --classic snap/*.snap
+
+      - name: Verify Installation
+        run: asimov --version
+
+      - name: Extract Version from snapcraft.yaml
+        id: get_version
+        run: |
+          SNAP_VERSION=$(awk -F': ' '/^version:/ {print $2}' snap/snapcraft.yaml | tr -d "'")
+          echo "SNAP_VERSION=$SNAP_VERSION" >> $GITHUB_ENV
+
+      - name: Create Git Tag
+        run: |
+          TAG_NAME="v${{ env.SNAP_VERSION }}"
+          if git ls-remote --tags origin | grep -q "refs/tags/$TAG_NAME"; then
+            echo "Tag $TAG_NAME already exists. Skipping tag creation."
+          else
+            git tag "$TAG_NAME"
+            git push origin "$TAG_NAME"
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${{ env.SNAP_VERSION }}"
+          name: "Asimov CLI Release ${{ env.SNAP_VERSION }}"
+          body: "Automated release for Asimov CLI Snap build version ${{ env.SNAP_VERSION }}."
+          draft: false
+          prerelease: true
+          files: "snap/*.snap"
