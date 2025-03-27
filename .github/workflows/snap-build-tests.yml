@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'snap/**'
   pull_request:
+    paths:
+      - 'snap/**'
 
 jobs:
   build-snap:
@@ -20,6 +24,7 @@ jobs:
         run: sudo snap install core22 --channel=latest/stable
 
       - name: Build Snap (Destructive Mode)
+        working-directory: snap
         run: |
           snapcraft --destructive-mode
           ls -lh *.snap
@@ -28,18 +33,18 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: asimov-cli-snap
-          path: "*.snap"
+          path: "snap/*.snap"
 
       - name: Install Snap Package
-        run: sudo snap install --dangerous --classic *.snap
+        run: sudo snap install --dangerous --classic snap/*.snap
 
-      - name: Verify Installation (asimov --version)
+      - name: Verify Installation
         run: asimov --version
 
       - name: Extract Version from snapcraft.yaml
         id: get_version
         run: |
-          SNAP_VERSION=$(awk -F': ' '/^version:/ {print $2}' snapcraft.yaml | tr -d "'")
+          SNAP_VERSION=$(awk -F': ' '/^version:/ {print $2}' snap/snapcraft.yaml | tr -d "'")
           echo "SNAP_VERSION=$SNAP_VERSION" >> $GITHUB_ENV
 
       - name: Create Git Tag
@@ -60,4 +65,4 @@ jobs:
           body: "Automated release for Asimov CLI Snap build version ${{ env.SNAP_VERSION }}."
           draft: false
           prerelease: true
-          files: "*.snap"
+          files: "snap/*.snap"
