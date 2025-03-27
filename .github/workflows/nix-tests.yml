@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'nix/**'
   pull_request:
+    paths:
+      - 'nix/**'
 
 permissions:
   contents: read
