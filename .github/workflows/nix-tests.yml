@@ -55,7 +55,7 @@ jobs:
             source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
           fi
 
-          nix registry add asimov-cli ".?dir=nix"
+          nix registry add asimov-cli "./nix"
           nix profile install asimov-cli#default --no-write-lock-file
 
           asimov --version
