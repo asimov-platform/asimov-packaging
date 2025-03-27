@@ -14,7 +14,7 @@ The Snap package will be downloaded into the `asimov` directory inside the home 
 
 ```bash
 mkdir -p ~/asimov && cd ~/asimov
-wget https://github.com/asimov-platform/snap/releases/download/v25.0.0-dev.3/asimov-cli_25.0.0-dev.3_amd64.snap -O asimov-cli.snap
+wget https://github.com/asimov-platform/asimov-packaging/releases/download/v25.0.0-dev.3/asimov-cli_25.0.0-dev.3_amd64.snap -O asimov-cli.snap
 ```
 
 ## Installation
