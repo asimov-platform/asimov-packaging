@@ -1,4 +1,4 @@
-name: Snap build & test
+name: Snap Build & Best
 
 on:
   push:
