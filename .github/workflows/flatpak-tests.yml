@@ -38,11 +38,10 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: repo
+          publish_dir: flatpak/repo
           publish_branch: gh-pages
 
   test-deployed:
-    # This job will only start once build-and-publish completes successfully
     needs: build-and-publish
     runs-on: ubuntu-latest
 
