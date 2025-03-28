@@ -35,6 +35,7 @@ jobs:
             curl -L https://nixos.org/nix/install | sh
             mkdir -p ~/.config/nix
             echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
+            echo "access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}" >> ~/.config/nix/nix.conf
 
             # Source the installed profile
             source /home/runner/.nix-profile/etc/profile.d/nix.sh
