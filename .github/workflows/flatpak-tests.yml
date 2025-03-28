@@ -1,4 +1,4 @@
-name: Test Deployed Flatpak
+name: Test ASIMOV CLI Installation
 
 on:
   workflow_run:
@@ -11,9 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Wait for GitHub Pages update
-        run: sleep 20
-
       - name: Install Flatpak
         run: |
           sudo apt-get update
@@ -28,7 +25,7 @@ jobs:
       - name: Add remote from GH Pages
         run: |
           flatpak remote-add --if-not-exists --user asimov-cli \
-            --no-gpg-verify https://asimov-platform.github.io/flatpak
+            --no-gpg-verify https://asimov-platform.github.io/asimov-packaging
           flatpak remotes
 
       - name: Install and Run CLI
