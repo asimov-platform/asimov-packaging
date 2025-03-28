@@ -38,7 +38,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: flatpak/repo
+          publish_dir: repo
           publish_branch: gh-pages
 
   test-deployed:
@@ -47,9 +47,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Wait for GH Pages to update (optional)
-        run: sleep 30
-
       - name: Install Flatpak
         run: |
           sudo apt-get update
