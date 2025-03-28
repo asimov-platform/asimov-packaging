@@ -1,4 +1,4 @@
-name: Build, Publish & Test Flatpak
+name: Flatpak Build, Publish & Test
 
 on:
   push:
