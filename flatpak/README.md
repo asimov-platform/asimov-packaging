@@ -15,7 +15,7 @@ This repository provides a Flatpak package for the [ASIMOV Platform]
 1. Add the ASIMOV Platform Flatpak remote
 
 ```bash
-flatpak remote-add --if-not-exists --user asimov-cli --no-gpg-verify https://asimov-platform.github.io/flatpak
+flatpak remote-add --if-not-exists --user asimov-cli --no-gpg-verify https://asimov-platform.github.io/asimov-packaging
 ```
 
 2. Install the [asimov-cli]
