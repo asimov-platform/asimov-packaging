@@ -1,4 +1,4 @@
-name: Test ASIMOV CLI Installation
+name: Nix Build & Test
 
 on:
   push:
