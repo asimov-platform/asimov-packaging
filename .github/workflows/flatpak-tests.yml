@@ -2,7 +2,7 @@ name: Test ASIMOV CLI Installation
 
 on:
   workflow_run:
-    workflows: ["pages-build-deployment"]
+    workflows: ["Build & Publish Flatpak to GitHub Pages"]
     types: ["completed"]
 
 jobs:
