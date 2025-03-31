@@ -2,7 +2,8 @@ name: Update flake.nix to use latest version of ASIMOV CLI
 
 on:
   workflow_dispatch:
-  push:
+  schedule:
+    - cron: "0 16 * * 4"
 
 jobs:
   updateAsimov:
@@ -23,17 +24,17 @@ jobs:
         run: |
           set -euxo pipefail
 
-          # 1) Find latest release
+          # Find latest release
           LATEST_VERSION="$(curl -s https://api.github.com/repos/asimov-platform/asimov-cli/releases/latest | jq -r .tag_name)"
           echo "Latest Asimov CLI version: $LATEST_VERSION"
 
-          # 2) Build URLs for each .sha256
+          # Build URLs for each .sha256
           URL_X86_64_LINUX_SHA="https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}/asimov-linux-x86-gnu.gz.sha256"
           URL_AARCH64_LINUX_SHA="https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}/asimov-linux-arm-gnu.gz.sha256"
           URL_X86_64_DARWIN_SHA="https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}/asimov-macos-x86.gz.sha256"
           URL_AARCH64_DARWIN_SHA="https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}/asimov-macos-arm.gz.sha256"
 
-          # 3) For each .sha256, extract the raw hex (column 1)
+          # For each .sha256, extract the raw hex
           x86_64_linux_hex="$(curl -sL "$URL_X86_64_LINUX_SHA" | cut -d ' ' -f1)"
           aarch64_linux_hex="$(curl -sL "$URL_AARCH64_LINUX_SHA" | cut -d ' ' -f1)"
           x86_64_darwin_hex="$(curl -sL "$URL_X86_64_DARWIN_SHA" | cut -d ' ' -f1)"
@@ -45,7 +46,7 @@ jobs:
           echo "  x86_64-darwin: $x86_64_darwin_hex"
           echo "  aarch64-darwin: $aarch64_darwin_hex"
 
-          # 4) sed them into flake.nix (both 'version' and 'sha256' for each platform)
+          # sed them into flake.nix (both 'version' and 'sha256' for each platform)
           sed -i "s|version = \".*\";|version = \"${LATEST_VERSION}\";|" nix/flake.nix
 
           sed -i -E "s|(asimov-linux-x86-gnu.gz\";[[:space:]]*sha256 = \")([^\"]*)(\";)|\\1${x86_64_linux_hex}\\3|" nix/flake.nix
@@ -53,7 +54,7 @@ jobs:
           sed -i -E "s|(asimov-macos-x86.gz\";[[:space:]]*sha256 = \")([^\"]*)(\";)|\\1${x86_64_darwin_hex}\\3|" nix/flake.nix
           sed -i -E "s|(asimov-macos-arm.gz\";[[:space:]]*sha256 = \")([^\"]*)(\";)|\\1${aarch64_darwin_hex}\\3|" nix/flake.nix
 
-          # 5) Commit & push if changed
+          # Commit & push if changed
           if git diff --exit-code nix/flake.nix; then
             echo "No changes to commit (Asimov CLI is already up to date)."
           else
