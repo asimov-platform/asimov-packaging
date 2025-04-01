@@ -1,7 +1,6 @@
 name: Update Flatpak YAML to use latest version of ASIMOV CLI
 
 on:
-  push:
   workflow_dispatch:
   schedule:
     - cron: "0 16 * * 4"
