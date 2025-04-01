@@ -24,18 +24,19 @@ jobs:
         run: |
           set -euxo pipefail
           
+          FLATPAK_YAML="flatpak/com.asimov-platform.asimov-cli.yaml"
           LATEST_VERSION="$(curl -s https://api.github.com/repos/asimov-platform/asimov-cli/releases/latest | jq -r .tag_name)"
           
-          sed -i "s|https://github.com/asimov-platform/asimov-cli/releases/download/[^/]*|https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}|g" com.asimov-platform.asimov-cli.yaml
-
+          sed -i "s|https://github.com/asimov-platform/asimov-cli/releases/download/[^/]*|https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}|g" "$FLATPAK_YAML"
+          
           x86_64_hex="$(curl -sL "https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}/asimov-linux-x86-gnu.gz.sha256" | cut -d ' ' -f1)"
-          sed -i -E "/asimov-linux-x86-gnu.gz/{N;s/(sha256: \").*(\".*)/\1${x86_64_hex}\2/}" com.asimov-platform.asimov-cli.yaml
-
+          sed -i -E "/asimov-linux-x86-gnu.gz/{N;s/(sha256: \").*(\".*)/\1${x86_64_hex}\2/}" "$FLATPAK_YAML"
+          
           aarch64_hex="$(curl -sL "https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}/asimov-linux-arm-gnu.gz.sha256" | cut -d ' ' -f1)"
-          sed -i -E "/asimov-linux-arm-gnu.gz/{N;s/(sha256: \").*(\".*)/\1${aarch64_hex}\2/}" com.asimov-platform.asimov-cli.yaml
-
-          if ! git diff --exit-code com.asimov-platform.asimov-cli.yaml; then
-            git add com.asimov-platform.asimov-cli.yaml
+          sed -i -E "/asimov-linux-arm-gnu.gz/{N;s/(sha256: \").*(\".*)/\1${aarch64_hex}\2/}" "$FLATPAK_YAML"
+          
+          if ! git diff --exit-code "$FLATPAK_YAML"; then
+            git add "$FLATPAK_YAML"
             git commit -m "chore: Update Flatpak YAML to ${LATEST_VERSION}"
             git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref }}
           fi
