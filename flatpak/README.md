@@ -21,7 +21,7 @@ flatpak remote-add --if-not-exists --user asimov-cli --no-gpg-verify https://asi
 2. Install the [asimov-cli]
 
 ```bash
-flatpak install asimov-cli com.asimov_platform.asimov_cli
+flatpak install asimov-cli so.asimov.cli
 ```
 
 ## Updating
@@ -36,13 +36,13 @@ flatpak update com.asimov_platform.asimov_cli
 After installation, you can run the CLI with:
 
 ```bash
-flatpak run com.asimov_platform.asimov_cli --help
+flatpak run so.asimov.cli --help
 ```
 
 To check the version:
 
 ```bash
-flatpak run com.asimov_platform.asimov_cli --version
+flatpak run so.asimov.cli --version
 ```
 
 ## Troubleshooting

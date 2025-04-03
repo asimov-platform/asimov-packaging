@@ -31,7 +31,7 @@ jobs:
       - name: Build Flatpak OSTree Repo
         run: |
           cd flatpak
-          flatpak-builder --force-clean --repo=repo build-dir com.asimov_platform.asimov_cli.yaml
+          flatpak-builder --force-clean --repo=repo build-dir so.asimov.cli.yaml
           ostree --repo=repo summary -u
 
       - name: Publish to GitHub Pages
@@ -65,5 +65,5 @@ jobs:
 
       - name: Install and Run CLI
         run: |
-          flatpak install -y --user asimov-cli com.asimov_platform.asimov_cli
-          flatpak run com.asimov_platform.asimov_cli --version
+          flatpak install -y --user asimov-cli so.asimov.cli
+          flatpak run so.asimov.cli --version
