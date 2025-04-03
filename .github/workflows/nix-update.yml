@@ -1,0 +1,51 @@
+name: Update flake.nix to use latest version of ASIMOV CLI
+
+on:
+  workflow_dispatch:
+  schedule:
+    # At 02:00 every night – https://crontab.guru/#0_2_*_*_*
+    - cron: "0 2 * * *"
+
+jobs:
+  updateAsimov:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      - name: Set up Git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Update flake.nix
+        shell: bash
+        run: |
+          set -euxo pipefail
+          
+          LATEST_VERSION="$(curl -s https://api.github.com/repos/asimov-platform/asimov-cli/releases/latest | jq -r .tag_name)"
+          
+          URL_X86_64_LINUX_SHA="https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}/asimov-linux-x86-gnu.gz.sha256"
+          URL_AARCH64_LINUX_SHA="https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}/asimov-linux-arm-gnu.gz.sha256"
+          URL_X86_64_DARWIN_SHA="https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}/asimov-macos-x86.gz.sha256"
+          URL_AARCH64_DARWIN_SHA="https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}/asimov-macos-arm.gz.sha256"
+          
+          x86_64_linux_hex="$(curl -sL "$URL_X86_64_LINUX_SHA" | cut -d ' ' -f1)"
+          aarch64_linux_hex="$(curl -sL "$URL_AARCH64_LINUX_SHA" | cut -d ' ' -f1)"
+          x86_64_darwin_hex="$(curl -sL "$URL_X86_64_DARWIN_SHA" | cut -d ' ' -f1)"
+          aarch64_darwin_hex="$(curl -sL "$URL_AARCH64_DARWIN_SHA" | cut -d ' ' -f1)"
+          
+          sed -i "s|version = \".*\";|version = \"${LATEST_VERSION}\";|" nix/flake.nix
+          
+          sed -i -E "s|(asimov-linux-x86-gnu.gz\";[[:space:]]*sha256 = \")([^\"]*)(\";)|\\1${x86_64_linux_hex}\\3|" nix/flake.nix
+          sed -i -E "s|(asimov-linux-arm-gnu.gz\";[[:space:]]*sha256 = \")([^\"]*)(\";)|\\1${aarch64_linux_hex}\\3|" nix/flake.nix
+          sed -i -E "s|(asimov-macos-x86.gz\";[[:space:]]*sha256 = \")([^\"]*)(\";)|\\1${x86_64_darwin_hex}\\3|" nix/flake.nix
+          sed -i -E "s|(asimov-macos-arm.gz\";[[:space:]]*sha256 = \")([^\"]*)(\";)|\\1${aarch64_darwin_hex}\\3|" nix/flake.nix
+          
+          if ! git diff --exit-code nix/flake.nix; then
+            git add nix/flake.nix
+            git commit -m "Update ASIMOV CLI to ${LATEST_VERSION}"
+            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref }}
+          fi
