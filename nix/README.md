@@ -26,13 +26,6 @@ nix registry add asimov-cli github:asimov-platform/asimov-packaging?dir=nix
 nix profile install asimov-cli#default --no-write-lock-file
 ```
 
-## Updating
-
-To upgrade to the latest version, simply run:
-```bash
-nix profile upgrade asimov-cli#default
-```
-
 ## Usage
 
 After installation, you can run the CLI with:
