@@ -14,17 +14,34 @@ parts:
 
     override-pull: |
       snapcraftctl pull
-
-      wget -O asimov-linux-x86.gz \
-        https://github.com/asimov-platform/asimov-cli/releases/download/25.0.0-dev.3/asimov-linux-x86-gnu.gz
-
-      gunzip asimov-linux-x86.gz
-      chmod +x asimov-linux-x86
+      
+      ARCH="$(uname -m)"
+      if [ "$ARCH" = "x86_64" ]; then
+        FILE="asimov-linux-x86-gnu.gz"
+      elif [ "$ARCH" = "aarch64" ]; then
+        FILE="asimov-linux-arm-gnu.gz"
+      fi
+      
+      if [ -n "$FILE" ]; then
+        wget -O "$FILE" "https://github.com/asimov-platform/asimov-cli/releases/download/25.0.0-dev.3/$FILE"
+        gunzip "$FILE"
+        chmod +x "${FILE%.gz}"
+      fi
 
     override-build: |
       mkdir -p "$SNAPCRAFT_PART_INSTALL/bin"
-      mv asimov-linux-x86 "$SNAPCRAFT_PART_INSTALL/bin/asimov"
-
+      
+      ARCH="$(uname -m)"
+      if [ "$ARCH" = "x86_64" ]; then
+        BIN_NAME="asimov-linux-x86-gnu"
+      elif [ "$ARCH" = "aarch64" ]; then
+        BIN_NAME="asimov-linux-arm-gnu"
+      fi
+      
+      if [ -n "$BIN_NAME" ]; then
+        mv "$BIN_NAME" "$SNAPCRAFT_PART_INSTALL/bin/asimov"
+      fi
+      
       snapcraftctl build
 
 apps:

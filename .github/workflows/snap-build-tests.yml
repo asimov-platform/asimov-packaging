@@ -49,7 +49,7 @@ jobs:
 
       - name: Create Git Tag
         run: |
-          TAG_NAME="v${{ env.SNAP_VERSION }}"
+          TAG_NAME="${{ env.SNAP_VERSION }}"
           if git ls-remote --tags origin | grep -q "refs/tags/$TAG_NAME"; then
             echo "Tag $TAG_NAME already exists. Skipping tag creation."
           else
@@ -61,7 +61,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "v${{ env.SNAP_VERSION }}"
-          name: "Asimov CLI Release ${{ env.SNAP_VERSION }}"
+          name: "ASIMOV CLI Release ${{ env.SNAP_VERSION }}"
           body: "Automated release for Asimov CLI Snap build version ${{ env.SNAP_VERSION }}."
           draft: false
           prerelease: true
