@@ -1,4 +1,4 @@
-app-id: com.asimov_platform.asimov_cli
+app-id: so.asimov.cli
 runtime: org.freedesktop.Platform
 runtime-version: "24.08"
 sdk: org.freedesktop.Sdk
