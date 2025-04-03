@@ -1,0 +1,32 @@
+app-id: so.asimov.cli
+runtime: org.freedesktop.Platform
+runtime-version: "24.08"
+sdk: org.freedesktop.Sdk
+command: asimov
+
+finish-args:
+  - --share=network
+
+modules:
+  - name: asimov_cli
+    buildsystem: simple
+
+    sources:
+      - type: file
+        url: "https://github.com/asimov-platform/asimov-cli/releases/download/25.0.0-dev.3/asimov-linux-x86-gnu.gz"
+        sha256: "0c30685a1b814364c17a70b629e3b94a24bec0c66c1943bd324cf56b57980326"
+        only-arches:
+          - x86_64
+        dest-filename: "asimov.gz"
+
+      - type: file
+        url: "https://github.com/asimov-platform/asimov-cli/releases/download/25.0.0-dev.3/asimov-linux-arm-gnu.gz"
+        sha256: "2761b82936598588b7266d6d63abd1271e57d087c14f382f1ab15e523973c3e5"
+        only-arches:
+          - aarch64
+        dest-filename: "asimov.gz"
+
+    build-commands:
+      - "gunzip asimov.gz"
+      - "chmod 755 asimov"
+      - "install -Dm755 asimov /app/bin/asimov"
