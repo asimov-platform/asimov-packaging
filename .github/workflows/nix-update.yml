@@ -3,7 +3,8 @@ name: Update flake.nix to use latest version of ASIMOV CLI
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 16 * * 4"
+    # At 02:00 every night – https://crontab.guru/#0_2_*_*_*
+    - cron: "0 2 * * *"
 
 jobs:
   updateAsimov:
@@ -45,6 +46,6 @@ jobs:
           
           if ! git diff --exit-code nix/flake.nix; then
             git add nix/flake.nix
-            git commit -m "chore: Update Asimov CLI to ${LATEST_VERSION}"
+            git commit -m "Update ASIMOV CLI to ${LATEST_VERSION}"
             git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref }}
           fi
