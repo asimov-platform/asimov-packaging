@@ -3,7 +3,8 @@ name: Update Flatpak YAML to use latest version of ASIMOV CLI
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 16 * * 4"
+    # At 02:00 every night – https://crontab.guru/#0_2_*_*_*
+    - cron: "0 2 * * *"
 
 jobs:
   updateFlatpak:
@@ -23,7 +24,7 @@ jobs:
         run: |
           set -euxo pipefail
           
-          FLATPAK_YAML="flatpak/com.asimov_platform.asimov_cli.yaml"
+          FLATPAK_YAML="flatpak/so.asimov.cli.yaml"
           LATEST_VERSION="$(curl -s https://api.github.com/repos/asimov-platform/asimov-cli/releases/latest | jq -r .tag_name)"
           
           sed -i "s|https://github.com/asimov-platform/asimov-cli/releases/download/[^/]*|https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}|g" "$FLATPAK_YAML"
@@ -36,6 +37,6 @@ jobs:
           
           if ! git diff --exit-code "$FLATPAK_YAML"; then
             git add "$FLATPAK_YAML"
-            git commit -m "chore: Update Flatpak YAML to ${LATEST_VERSION}"
+            git commit -m "Update Flatpak YAML to ${LATEST_VERSION}"
             git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref }}
           fi
