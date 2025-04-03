@@ -28,7 +28,7 @@ flatpak install asimov-cli so.asimov.cli
 
 To update to the latest version, simply run:
 ```bash
-flatpak update com.asimov_platform.asimov_cli
+flatpak update so.asimov.cli
 ```
 
 ## Usage
