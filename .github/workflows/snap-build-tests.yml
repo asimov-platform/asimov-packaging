@@ -37,7 +37,6 @@ jobs:
       - name: Build Snap for ${{ matrix.arch }}
         working-directory: snap
         run: |
-          # We keep the version as defined in snapcraft.yaml (no override)
           snapcraft --destructive-mode
           mv *.snap "../asimov-${{ matrix.arch }}.snap"
 
@@ -47,11 +46,11 @@ jobs:
           name: asimov-${{ matrix.arch }}
           path: asimov-${{ matrix.arch }}.snap
 
-      - name: Install Snap Package
-        run: sudo snap install --dangerous --classic asimov-${{ matrix.arch }}.snap
-
-      - name: Verify Installation
-        run: asimov --version
+      - name: Install & Test Snap Package (only on x86)
+        if: matrix.arch == 'x86-gnu' || matrix.arch == 'x86-musl'
+        run: |
+          sudo snap install --dangerous --classic asimov-${{ matrix.arch }}.snap
+          asimov --version
 
   release:
     needs: build
