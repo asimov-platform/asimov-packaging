@@ -72,13 +72,21 @@ jobs:
           path: snap-artifacts
 
       - name: Create Git Tag
+        id: tag_step
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@users.noreply.github.com
-          git tag "${{ env.SNAP_VERSION }}"
-          git push origin "${{ env.SNAP_VERSION }}"
+          git fetch --tags
+          if git rev-parse "${{ env.SNAP_VERSION }}" >/dev/null 2>&1; then
+            echo "created=false" >> $GITHUB_OUTPUT
+          else
+            git config user.name github-actions
+            git config user.email github-actions@users.noreply.github.com
+            git tag "${{ env.SNAP_VERSION }}"
+            git push origin "${{ env.SNAP_VERSION }}"
+            echo "created=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Create GitHub Release
+        if: steps.tag_step.outputs.created == 'true'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "${{ env.SNAP_VERSION }}"
