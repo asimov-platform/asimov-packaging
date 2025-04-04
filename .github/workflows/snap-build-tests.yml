@@ -67,7 +67,7 @@ jobs:
           echo "version=$SNAP_VERSION" >> $GITHUB_OUTPUT
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@main
         with:
           path: snap-artifacts
 
