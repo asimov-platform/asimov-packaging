@@ -42,7 +42,7 @@ jobs:
           mv *.snap "../asimov-${{ matrix.arch }}.snap"
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@main
         with:
           name: asimov-${{ matrix.arch }}
           path: asimov-${{ matrix.arch }}.snap
