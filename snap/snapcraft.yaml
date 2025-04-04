@@ -1,0 +1,29 @@
+name: asimov
+base: core22
+version: 'auto'
+summary: ASIMOV CLI Snap
+description: "Bundles a prebuilt ASIMOV CLI binary (gzipped) into a snap."
+
+grade: devel
+confinement: classic
+
+parts:
+  asimov-cli:
+    plugin: dump
+    source: .
+    override-pull: |
+      snapcraftctl pull
+
+      FILE="${BINARY_NAME}.gz"
+      wget -O "$FILE" "https://github.com/asimov-platform/asimov-cli/releases/latest/download/$FILE"
+      gunzip "$FILE"
+      chmod +x "${FILE%.gz}"
+
+    override-build: |
+      mkdir -p "$SNAPCRAFT_PART_INSTALL/bin"
+      mv "${BINARY_NAME}" "$SNAPCRAFT_PART_INSTALL/bin/asimov"
+      snapcraftctl build
+
+apps:
+  asimov:
+    command: bin/asimov

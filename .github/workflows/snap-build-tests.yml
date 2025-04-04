@@ -1,0 +1,89 @@
+name: Snap Build & Test
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'snap/**'
+  pull_request:
+    paths:
+      - 'snap/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch:
+          - x86-gnu
+          - x86-musl
+          - arm-gnu
+          - arm-musl
+
+    env:
+      BINARY_NAME: asimov-linux-${{ matrix.arch }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Install Snapcraft
+        run: sudo snap install snapcraft --classic
+
+      - name: Pre-install core22
+        run: sudo snap install core22 --channel=latest/stable
+
+      - name: Build Snap for ${{ matrix.arch }}
+        working-directory: snap
+        run: |
+          snapcraft --destructive-mode
+          mv *.snap "../asimov-${{ matrix.arch }}.snap"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: asimov-${{ matrix.arch }}
+          path: asimov-${{ matrix.arch }}.snap
+
+      - name: Install & Test Snap Package (only on x86)
+        if: matrix.arch == 'x86-gnu' || matrix.arch == 'x86-musl'
+        run: |
+          sudo snap install --dangerous --classic asimov-${{ matrix.arch }}.snap
+          asimov --version
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Extract Version from snapcraft.yaml
+        id: get_version
+        run: |
+          SNAP_VERSION=$(awk -F': ' '/^version:/ {print $2}' snap/snapcraft.yaml | tr -d "'")
+          echo "SNAP_VERSION=$SNAP_VERSION" >> $GITHUB_ENV
+          echo "version=$SNAP_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@main
+        with:
+          path: snap-artifacts
+
+      - name: Create Git Tag
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@users.noreply.github.com
+          git tag "${{ env.SNAP_VERSION }}"
+          git push origin "${{ env.SNAP_VERSION }}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "${{ env.SNAP_VERSION }}"
+          name: "ASIMOV CLI Release ${{ env.SNAP_VERSION }}"
+          body: "Automated release for ASIMOV CLI Snap version ${{ env.SNAP_VERSION }}."
+          draft: false
+          prerelease: true
+          files: snap-artifacts/**/*.snap
