@@ -13,8 +13,41 @@ This repository provides the Snap package for the [ASIMOV Platform]
 The Snap package will be downloaded into the `asimov` directory inside the home folder (`~/asimov`).
 
 ```bash
+# Create and navigate to the download directory
 mkdir -p ~/asimov && cd ~/asimov
-wget https://github.com/asimov-platform/asimov-packaging/releases/download/v25.0.0-dev.3/asimov-cli_25.0.0-dev.3_amd64.snap -O asimov-cli.snap
+
+# Detect architecture
+ARCH="$(uname -m)"
+
+# Detect libc (musl or glibc)
+if ldd --version 2>&1 | grep -qi musl; then
+  LIBC="musl"
+else
+  LIBC="gnu"
+fi
+
+# Map to the correct snap name
+case "$ARCH-$LIBC" in
+  x86_64-gnu)
+    SNAP_NAME="asimov-x86-gnu.snap"
+    ;;
+  x86_64-musl)
+    SNAP_NAME="asimov-x86-musl.snap"
+    ;;
+  aarch64-gnu)
+    SNAP_NAME="asimov-arm-gnu.snap"
+    ;;
+  aarch64-musl)
+    SNAP_NAME="asimov-arm-musl.snap"
+    ;;
+  *)
+    echo "❌ Unsupported architecture or libc: $ARCH-$LIBC"
+    exit 1
+    ;;
+esac
+
+# Download the snap file from the latest release
+wget "https://github.com/asimov-platform/asimov-packaging/releases/latest/download/$SNAP_NAME" -O asimov-cli.snap
 ```
 
 ## Installation
