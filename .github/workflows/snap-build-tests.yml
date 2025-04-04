@@ -1,4 +1,4 @@
-name: Snap Build & Best
+name: Snap Build & Test
 
 on:
   push:
@@ -11,8 +11,19 @@ on:
       - 'snap/**'
 
 jobs:
-  build-snap:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch:
+          - x86-gnu
+          - x86-musl
+          - arm-gnu
+          - arm-musl
+
+    env:
+      BINARY_NAME: asimov-linux-${{ matrix.arch }}
+
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -23,46 +34,57 @@ jobs:
       - name: Pre-install core22
         run: sudo snap install core22 --channel=latest/stable
 
-      - name: Build Snap (Destructive Mode)
+      - name: Build Snap for ${{ matrix.arch }}
         working-directory: snap
         run: |
+          # We keep the version as defined in snapcraft.yaml (no override)
           snapcraft --destructive-mode
-          ls -lh *.snap
+          mv *.snap "../asimov-${{ matrix.arch }}.snap"
 
-      - name: Upload Snap Artifact
-        uses: actions/upload-artifact@main
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: asimov-cli-snap
-          path: "snap/*.snap"
+          name: asimov-${{ matrix.arch }}
+          path: asimov-${{ matrix.arch }}.snap
 
       - name: Install Snap Package
-        run: sudo snap install --dangerous --classic snap/*.snap
+        run: sudo snap install --dangerous --classic asimov-${{ matrix.arch }}.snap
 
       - name: Verify Installation
         run: asimov --version
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
 
       - name: Extract Version from snapcraft.yaml
         id: get_version
         run: |
           SNAP_VERSION=$(awk -F': ' '/^version:/ {print $2}' snap/snapcraft.yaml | tr -d "'")
           echo "SNAP_VERSION=$SNAP_VERSION" >> $GITHUB_ENV
+          echo "version=$SNAP_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: snap-artifacts
 
       - name: Create Git Tag
         run: |
-          TAG_NAME="${{ env.SNAP_VERSION }}"
-          if git ls-remote --tags origin | grep -q "refs/tags/$TAG_NAME"; then
-            echo "Tag $TAG_NAME already exists. Skipping tag creation."
-          else
-            git tag "$TAG_NAME"
-            git push origin "$TAG_NAME"
-          fi
+          git config user.name github-actions
+          git config user.email github-actions@users.noreply.github.com
+          git tag "${{ env.SNAP_VERSION }}"
+          git push origin "${{ env.SNAP_VERSION }}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "v${{ env.SNAP_VERSION }}"
+          tag_name: "${{ env.SNAP_VERSION }}"
           name: "ASIMOV CLI Release ${{ env.SNAP_VERSION }}"
-          body: "Automated release for Asimov CLI Snap build version ${{ env.SNAP_VERSION }}."
+          body: "Automated release for ASIMOV CLI Snap version ${{ env.SNAP_VERSION }}."
           draft: false
           prerelease: true
-          files: "snap/*.snap"
+          files: snap-artifacts/**/*.snap

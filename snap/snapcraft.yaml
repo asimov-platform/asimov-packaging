@@ -1,6 +1,6 @@
 name: asimov
 base: core22
-version: '25.0.0-dev.3'
+version: 'auto'
 summary: ASIMOV CLI Snap
 description: "Bundles a prebuilt ASIMOV CLI binary (gzipped) into a snap."
 
@@ -11,37 +11,17 @@ parts:
   asimov-cli:
     plugin: dump
     source: .
-
     override-pull: |
       snapcraftctl pull
-      
-      ARCH="$(uname -m)"
-      if [ "$ARCH" = "x86_64" ]; then
-        FILE="asimov-linux-x86-gnu.gz"
-      elif [ "$ARCH" = "aarch64" ]; then
-        FILE="asimov-linux-arm-gnu.gz"
-      fi
-      
-      if [ -n "$FILE" ]; then
-        wget -O "$FILE" "https://github.com/asimov-platform/asimov-cli/releases/download/25.0.0-dev.3/$FILE"
-        gunzip "$FILE"
-        chmod +x "${FILE%.gz}"
-      fi
+
+      FILE="${BINARY_NAME}.gz"
+      wget -O "$FILE" "https://github.com/asimov-platform/asimov-cli/releases/latest/download/$FILE"
+      gunzip "$FILE"
+      chmod +x "${FILE%.gz}"
 
     override-build: |
       mkdir -p "$SNAPCRAFT_PART_INSTALL/bin"
-      
-      ARCH="$(uname -m)"
-      if [ "$ARCH" = "x86_64" ]; then
-        BIN_NAME="asimov-linux-x86-gnu"
-      elif [ "$ARCH" = "aarch64" ]; then
-        BIN_NAME="asimov-linux-arm-gnu"
-      fi
-      
-      if [ -n "$BIN_NAME" ]; then
-        mv "$BIN_NAME" "$SNAPCRAFT_PART_INSTALL/bin/asimov"
-      fi
-      
+      mv "${BINARY_NAME}" "$SNAPCRAFT_PART_INSTALL/bin/asimov"
       snapcraftctl build
 
 apps:
