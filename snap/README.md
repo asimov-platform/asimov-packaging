@@ -57,6 +57,22 @@ Once the download is complete, install the Snap package locally in classic mode 
 ```bash
 sudo snap install --dangerous --classic ~/asimov/asimov-cli.snap
 ```
+## Update
+
+To update the ASIMOV CLI Snap package to the latest version, follow these steps:
+
+1. **Download the latest `.snap` package**
+
+   Run the same commands from the [Download](#download) section to re-download the newest version of the Snap package. This will overwrite the previously downloaded file (`~/asimov/asimov-cli.snap`).
+
+2. **Reinstall the Snap package**
+
+   First, remove the existing version, then install the freshly downloaded one:
+
+   ```bash
+   sudo snap remove asimov
+   sudo snap install --dangerous --classic ~/asimov/asimov-cli.snap
+   ```
 
 ## Usage
 
