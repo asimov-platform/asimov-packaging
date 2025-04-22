@@ -22,8 +22,11 @@ jobs:
         os: [ubuntu-latest, macos-latest]
 
     steps:
-      - name: Check out this repo
+      - name: Check out PR branch
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Install Nix
         shell: bash
