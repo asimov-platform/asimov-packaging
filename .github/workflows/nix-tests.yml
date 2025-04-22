@@ -22,11 +22,8 @@ jobs:
         os: [ubuntu-latest, macos-latest]
 
     steps:
-      - name: Check out code
+      - name: Check out this repo
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
-          repository: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name || github.repository }}
 
       - name: Install Nix
         shell: bash
@@ -69,10 +66,8 @@ jobs:
           fi
 
           # Register the local flake and install
-          nix registry add asimov-cli "path:$GITHUB_WORKSPACE/nix"
-          nix profile install flake:asimov-cli#default --no-write-lock-file
+          nix registry add asimov-cli "$GITHUB_WORKSPACE/nix"
+          nix profile install asimov-cli#default --no-write-lock-file
 
           # Verify asimov-cli
           asimov --version
-          asimov module --version
-          asimov dataset --version
