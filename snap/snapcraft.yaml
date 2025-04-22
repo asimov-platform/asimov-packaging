@@ -22,8 +22,8 @@ parts:
         *) echo "Unsupported architecture: $ARCH" && exit 1 ;;
       esac
 
-      for name in asimov module-cli dataset-cli; do
-        FILE="${name}-${PLATFORM}.gz"
+      for name in asimov module-cli asimov; do
+        FILE="${name}-linux-${PLATFORM}.gz"
         wget -O "${name}.gz" "https://github.com/asimov-platform/${name}/releases/latest/download/${FILE}"
         gunzip "${name}.gz"
         chmod +x "${name}"
