@@ -66,8 +66,8 @@ jobs:
           fi
 
           # Register the local flake and install
-          nix registry add asimov-cli "$GITHUB_WORKSPACE/nix"
-          nix profile install asimov-cli#default --no-write-lock-file
+          nix registry add asimov-cli "path:$GITHUB_WORKSPACE/nix"
+          nix profile install flake:asimov-cli#default --no-write-lock-file
 
           # Verify asimov-cli
           asimov --version
