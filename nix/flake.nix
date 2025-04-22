@@ -100,7 +100,6 @@
         default = pkgs.buildEnv {
           name = "asimov-cli";
           paths = derivations;
-          exact = true;
         };
       };
 
