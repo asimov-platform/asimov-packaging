@@ -45,22 +45,22 @@
 
       hashes = {
         "x86_64-linux" = {
-          asimov  = "0c30685a1b814364c17a70b629e3b94a24bec0c66c1943bd324cf56b57980326";
+          asimov  = "6b6e54fd490e036d864158de7d4b19a248aaf64c926ff9d3daa9db0f463d6f9c";
           module  = "d8cb3ad98499d42ec4f89c6669264935a41b0583f6e3995b7e1382b73b654af6";
           dataset = "abbcf6612278381d079e85b658cced97b47f71652437fa39e6eb8dc2423d6d6d";
         };
         "aarch64-linux" = {
-          asimov  = "2761b82936598588b7266d6d63abd1271e57d087c14f382f1ab15e523973c3e5";
+          asimov  = "ef21144725eeccd0618357f0bb4936d1653a8968bfa8b530fa2490685470dc33";
           module  = "b90bc4cda8f648b5d0f7863f141c9a314b4410edf40fd7b0f5a20c4c9aa01b30";
           dataset = "83deb2d62df03a24e5f3965a9a137efe423714c9d852763f6223ff4dc96d33c0";
         };
         "x86_64-darwin" = {
-          asimov  = "f2620190d96c1d929ce1c43d6e7f6ba751b32b3000d6419c5f032e4e23a2dc3e";
+          asimov  = "eaaa532d63de98905367816b5ec6fad87815d2911d6d57bf7ddeec446f36bec5";
           module  = "18b26b321279923109b5dc81d7c8cb3cb5db7179a5db6e27601849add9195c37";
           dataset = "ea11d213dc01c99171e456de94958acc37abe84992b1c234b48e75a85ad6497d";
         };
         "aarch64-darwin" = {
-          asimov  = "c89a0660b1d091c332f6cf1611fe6f9021c8ed48948f2c43e2b05dfeb7afc8de";
+          asimov  = "e67ec61334647909fa1d405498ca42a6e7a9a96471a435ec5bbb7dc784c08ce4";
           module  = "39d3c86b017c0b51a263f946f44d398161f44920e3b224e8c718cca3f7cbd57d";
           dataset = "cf4f4b1058db1f5238df985b3958e596c6eea84c3f92f0d8f0f5a489174eefbf";
         };
