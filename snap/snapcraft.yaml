@@ -2,7 +2,7 @@ name: asimov
 base: core22
 version: 'auto'
 summary: ASIMOV CLI Snap
-description: "Bundles a prebuilt ASIMOV CLI binary (gzipped) into a snap."
+description: "Bundles prebuilt ASIMOV CLI binaries (asimov + subcommands) into a snap."
 
 grade: devel
 confinement: classic
@@ -14,14 +14,24 @@ parts:
     override-pull: |
       snapcraftctl pull
 
-      FILE="${BINARY_NAME}.gz"
-      wget -O "$FILE" "https://github.com/asimov-platform/asimov-cli/releases/latest/download/$FILE"
-      gunzip "$FILE"
-      chmod +x "${FILE%.gz}"
+      ARCH="${SNAPCRAFT_ARCH_TRIPLET}"
+
+      wget -O asimov.gz "https://github.com/asimov-platform/asimov-cli/releases/latest/download/asimov-linux-${ARCH}.gz"
+      wget -O module.gz "https://github.com/asimov-platform/asimov-module-cli/releases/latest/download/module-cli-linux-${ARCH}.gz"
+      wget -O dataset.gz "https://github.com/asimov-platform/asimov-dataset-cli/releases/latest/download/asimov-linux-${ARCH}.gz"
+
+      gunzip asimov.gz
+      gunzip module.gz
+      gunzip dataset.gz
+
+      mv module asimov-module
+      mv dataset asimov-dataset
+
+      chmod +x asimov asimov-module asimov-dataset
 
     override-build: |
       mkdir -p "$SNAPCRAFT_PART_INSTALL/bin"
-      mv "${BINARY_NAME}" "$SNAPCRAFT_PART_INSTALL/bin/asimov"
+      mv asimov asimov-module asimov-dataset "$SNAPCRAFT_PART_INSTALL/bin/"
       snapcraftctl build
 
 apps:
