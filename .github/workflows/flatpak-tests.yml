@@ -2,13 +2,13 @@ name: Flatpak Build, Publish & Test
 
 on:
   push:
-    branches:
-      - master
-    paths:
-      - 'flatpak/**'
-  pull_request:
-    paths:
-      - 'flatpak/**'
+#    branches:
+#      - master
+#    paths:
+#      - 'flatpak/**'
+#  pull_request:
+#    paths:
+#      - 'flatpak/**'
 
 jobs:
   build-and-publish:
