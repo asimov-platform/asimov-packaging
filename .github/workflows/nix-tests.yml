@@ -70,3 +70,5 @@ jobs:
 
           # Verify asimov-cli
           asimov --version
+          asimov module --version
+          asimov dataset --version
