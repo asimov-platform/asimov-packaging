@@ -11,19 +11,12 @@ This repository provides a Nix flake for the [ASIMOV Platform], delivering the *
   mkdir -p ~/.config/nix && echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
   ```
 
-## Configuration
-
-Firstly, register this flake in your local Nix registry for easier use
-```bash
-nix registry add asimov-cli github:asimov-platform/asimov-packaging?dir=nix
-```
-
 ## Installation
 
 ### Install [asimov-cli]
 
 ```bash
-nix profile install asimov-cli#default --no-write-lock-file
+nix profile install github:asimov-platform/asimov-packaging?dir=nix#default --no-write-lock-file
 ```
 
 ## Usage
@@ -32,12 +25,16 @@ After installation, you can run the CLI with:
 
 ```bash
 asimov --help
+asimov module --help
+asimov dataset --help
 ```
 
 To check the installed version:
 
 ```bash
 asimov --version
+asimov module --version
+asimov dataset --version
 ```
 
 ## Troubleshooting

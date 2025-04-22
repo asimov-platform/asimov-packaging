@@ -2,13 +2,13 @@ name: Nix Build & Test
 
 on:
   push:
-#    branches:
-#      - master
-#    paths:
-#      - 'nix/**'
-#  pull_request:
-#    paths:
-#      - 'nix/**'
+    branches:
+      - master
+    paths:
+      - 'nix/**'
+  pull_request:
+    paths:
+      - 'nix/**'
 
 permissions:
   contents: read
@@ -65,7 +65,6 @@ jobs:
             source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
           fi
 
-          # Register the local flake and install
           nix profile install "$GITHUB_WORKSPACE/nix"#default --no-write-lock-file
 
           # Verify asimov-cli
