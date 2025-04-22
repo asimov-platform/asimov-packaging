@@ -30,12 +30,16 @@ After installation, you can run the CLI with:
 
 ```bash
 flatpak run so.asimov.cli --help
+flatpak run so.asimov.cli module --help
+flatpak run so.asimov.cli dataset --help
 ```
 
 To check the version:
 
 ```bash
 flatpak run so.asimov.cli --version
+flatpak run so.asimov.cli module --version
+flatpak run so.asimov.cli dataset --version
 ```
 
 ## Troubleshooting
