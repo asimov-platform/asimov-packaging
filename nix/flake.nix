@@ -94,8 +94,7 @@
 
       perPlatform = system: let
         pkgs = pkgsFor system;
-        bins = [ "asimov" "module" "dataset" ];
-        derivations = map (n: mkBin { name = if n == "module" then "asimov-module" else if n == "dataset" then "asimov-dataset" else "asimov"; system = system; }) bins;
+        derivations = map (name: mkBin { inherit name system; }) [ "asimov" "module" "dataset" ];
       in {
         default = pkgs.buildEnv {
           name = "asimov-cli";
