@@ -23,23 +23,23 @@
       urls = {
         "x86_64-linux" = {
           asimov         = "https://github.com/asimov-platform/asimov-cli/releases/download/${versions.asimov}/asimov-linux-x86-gnu.gz";
-          asimov-module  = "https://github.com/asimov-platform/asimov-module-cli/releases/download/${versions.asimov-module}/module-cli-linux-x86-gnu.gz";
-          asimov-dataset = "https://github.com/asimov-platform/asimov-dataset-cli/releases/download/${versions.asimov-dataset}/asimov-linux-x86-gnu.gz";
+          asimov-module  = "https://github.com/asimov-platform/asimov-module-cli/releases/download/${versions.asimov-module}/asimov-module-cli-linux-x86-gnu.gz";
+          asimov-dataset = "https://github.com/asimov-platform/asimov-dataset-cli/releases/download/${versions.asimov-dataset}/asimov-dataset-cli-linux-x86-gnu.gz";
         };
         "aarch64-linux" = {
           asimov         = "https://github.com/asimov-platform/asimov-cli/releases/download/${versions.asimov}/asimov-linux-arm-gnu.gz";
-          asimov-module  = "https://github.com/asimov-platform/asimov-module-cli/releases/download/${versions.asimov-module}/module-cli-linux-arm-gnu.gz";
-          asimov-dataset = "https://github.com/asimov-platform/asimov-dataset-cli/releases/download/${versions.asimov-dataset}/asimov-linux-arm-gnu.gz";
+          asimov-module  = "https://github.com/asimov-platform/asimov-module-cli/releases/download/${versions.asimov-module}/asimov-module-cli-linux-arm-gnu.gz";
+          asimov-dataset = "https://github.com/asimov-platform/asimov-dataset-cli/releases/download/${versions.asimov-dataset}/asimov-dataset-cli-linux-arm-gnu.gz";
         };
         "x86_64-darwin" = {
           asimov         = "https://github.com/asimov-platform/asimov-cli/releases/download/${versions.asimov}/asimov-macos-x86.gz";
-          asimov-module  = "https://github.com/asimov-platform/asimov-module-cli/releases/download/${versions.asimov-module}/module-cli-macos-x86.gz";
-          asimov-dataset = "https://github.com/asimov-platform/asimov-dataset-cli/releases/download/${versions.asimov-dataset}/asimov-macos-x86.gz";
+          asimov-module  = "https://github.com/asimov-platform/asimov-module-cli/releases/download/${versions.asimov-module}/asimov-module-cli-macos-x86.gz";
+          asimov-dataset = "https://github.com/asimov-platform/asimov-dataset-cli/releases/download/${versions.asimov-dataset}/asimov-dataset-cli-macos-x86.gz";
         };
         "aarch64-darwin" = {
           asimov         = "https://github.com/asimov-platform/asimov-cli/releases/download/${versions.asimov}/asimov-macos-arm.gz";
-          asimov-module  = "https://github.com/asimov-platform/asimov-module-cli/releases/download/${versions.asimov-module}/module-cli-macos-arm.gz";
-          asimov-dataset = "https://github.com/asimov-platform/asimov-dataset-cli/releases/download/${versions.asimov-dataset}/asimov-macos-arm.gz";
+          asimov-module  = "https://github.com/asimov-platform/asimov-module-cli/releases/download/${versions.asimov-module}/asimov-module-cli-macos-arm.gz";
+          asimov-dataset = "https://github.com/asimov-platform/asimov-dataset-cli/releases/download/${versions.asimov-dataset}/asimov-dataset-cli-macos-arm.gz";
         };
       };
 
