@@ -50,3 +50,5 @@ parts:
 apps:
   asimov:
     command: bin/asimov
+    environment:
+      PATH: "$SNAP/bin:$PATH"
