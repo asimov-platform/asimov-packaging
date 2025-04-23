@@ -15,9 +15,9 @@
       ];
 
       versions = {
-        asimov         = "25.0.0-dev.3";
-        asimov-module  = "25.0.0-dev.2";
-        asimov-dataset = "25.0.0-dev.5";
+        asimov         = "25.0.0-dev.4";
+        asimov-module  = "25.0.0-dev.3";
+        asimov-dataset = "25.0.0-dev.6";
       };
 
       urls = {
@@ -45,24 +45,24 @@
 
       hashes = {
         x86_64-linux = { # 6b6e54fd490e036d864158de7d4b19a248aaf64c926ff9d3daa9db0f463d6f9c
-          asimov         = "d8cb3ad98499d42ec4f89c6669264935a41b0583f6e3995b7e1382b73b654af6";
-          asimov-module  = "d8cb3ad98499d42ec4f89c6669264935a41b0583f6e3995b7e1382b73b654af6";
-          asimov-dataset = "abbcf6612278381d079e85b658cced97b47f71652437fa39e6eb8dc2423d6d6d";
+          asimov         = "6b6e54fd490e036d864158de7d4b19a248aaf64c926ff9d3daa9db0f463d6f9c";
+          asimov-module  = "dc0c2951287df99aa20d50e2525395c62de1c2cbc716c075b9fff5003cbaa4d3";
+          asimov-dataset = "f154eac9ae686cfea8d5e72b5ca96c45f77ac50e7585ca09c53e4306954044e5";
         };
         aarch64-linux = { # ef21144725eeccd0618357f0bb4936d1653a8968bfa8b530fa2490685470dc33
-          asimov         = "83deb2d62df03a24e5f3965a9a137efe423714c9d852763f6223ff4dc96d33c0";
-          asimov-module  = "b90bc4cda8f648b5d0f7863f141c9a314b4410edf40fd7b0f5a20c4c9aa01b30";
-          asimov-dataset = "83deb2d62df03a24e5f3965a9a137efe423714c9d852763f6223ff4dc96d33c0";
+          asimov         = "ef21144725eeccd0618357f0bb4936d1653a8968bfa8b530fa2490685470dc33";
+          asimov-module  = "be254a76dbe1a529c98dc244a1fa7dffca046817590295f08c5a605761dde55b";
+          asimov-dataset = "73c35e9a608b22ae8c041e3322757eb37aedd5af2072ed867d0819509ad893b7";
         };
         x86_64-darwin = {
           asimov         = "eaaa532d63de98905367816b5ec6fad87815d2911d6d57bf7ddeec446f36bec5";
-          asimov-module  = "18b26b321279923109b5dc81d7c8cb3cb5db7179a5db6e27601849add9195c37";
-          asimov-dataset = "ea11d213dc01c99171e456de94958acc37abe84992b1c234b48e75a85ad6497d";
+          asimov-module  = "d87085a6c955e0de0190988e365905148013d0257cb745908a70adb1ee619b3a";
+          asimov-dataset = "89c952284188d493d62b0acec6c67313b1a3d05cca16042e4510173cafeebfb0";
         };
         aarch64-darwin = {
           asimov         = "e67ec61334647909fa1d405498ca42a6e7a9a96471a435ec5bbb7dc784c08ce4";
-          asimov-module  = "39d3c86b017c0b51a263f946f44d398161f44920e3b224e8c718cca3f7cbd57d";
-          asimov-dataset = "cf4f4b1058db1f5238df985b3958e596c6eea84c3f92f0d8f0f5a489174eefbf";
+          asimov-module  = "33d613fb703ca893cecb4b47dd4b8ff627dafd5b7968ff81545a1af57db7aa96";
+          asimov-dataset = "d2f99004bf815f339f2e27f3f6b4f85f682ce48a4ca0cdb8a5614a07a0afd549";
         };
       };
 
