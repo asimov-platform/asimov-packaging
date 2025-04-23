@@ -58,11 +58,9 @@ jobs:
           done
 
           if ! git diff --exit-code "$FLATPAK_YAML"; then
-            git diff "$FLATPAK_YAML"
-            # Uncomment when ready to commit & push
-            # git add "$FLATPAK_YAML"
-            # git commit -m "Update Flatpak YAML to latest ASIMOV versions"
-            # git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:"${GITHUB_REF#refs/heads/}"
+            git add "$FLATPAK_YAML"
+            git commit -m "Update Flatpak YAML to latest ASIMOV versions"
+            git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:"${GITHUB_REF#refs/heads/}"
           else
             echo "No changes detected."
           fi
