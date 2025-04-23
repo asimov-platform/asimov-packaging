@@ -54,10 +54,10 @@ jobs:
               sha_url="https://github.com/asimov-platform/${project}/releases/download/${latest_version}/${file}.sha256"
               sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
 
-              sed -i -E "s|(${sys}\"[[:space:]]*=.*${binary}.*${file}\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\")[^"]*(\";)|\1${sha}\2|" nix/flake.nix
+              sed -i -E "s|(${sys}\"[[:space:]]*=.*${binary}.*${file}\\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\\\")[^\"]*(\\\";)|\1${sha}\2|" nix/flake.nix
             done
 
-            sed -i -E "s|(${binary}[[:space:]]*=\s*\")[^"]*(\";)|\1${latest_version}\2|" nix/flake.nix
+            sed -i -E "s|(${binary}[[:space:]]*=\\s*\\\")[^\"]*(\\\";)|\1${latest_version}\2|" nix/flake.nix
           }
 
           update_entry "asimov-cli"         "asimov"
