@@ -14,11 +14,8 @@ parts:
     override-pull: |
       snapcraftctl pull
 
-      ARCH="${BINARY_NAME##*-}"
-      PLATFORM="$ARCH"
-
       for name in asimov module-cli dataset-cli; do
-        FILE="${name}-linux-${PLATFORM}.gz"
+        FILE="${name}-linux-${BINARY_NAME}.gz"
         wget -O "${name}.gz" "https://github.com/asimov-platform/${name}/releases/latest/download/${FILE}"
         gunzip "${name}.gz"
         chmod +x "${name}"
