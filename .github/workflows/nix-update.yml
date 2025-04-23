@@ -54,22 +54,25 @@ jobs:
           
           declare -A versions
           
-          update_hashes_for_platform() {
+          update_hash() {
             local platform="$1"
-            for key in "${!keys[@]}"; do
-              project="${keys[$key]}"
-              version="${versions[$key]}"
-              filename="${filenames[${key},${platform}]}.sha256"
-              
-              sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}"
-              sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
-              
-              sed -i -E "/hashes\s*=\s*\{/,/^\s*\};/ {
-                /${platform}\s*=\s*\{/,/^\s*\}/ {
-                  s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|
-                }
-              }" "$flake_file"
-            done
+            local key="$2"
+            local sha="$3"
+            local tmp_file
+            tmp_file="$(mktemp)"
+          
+            awk -v platform="$platform" -v key="$key" -v sha="$sha" '
+              BEGIN { in_hashes = 0; in_platform = 0 }
+              /^\s*hashes\s*=\s*\{/ { in_hashes = 1 }
+              in_hashes && $0 ~ "^[[:space:]]*" platform "[[:space:]]*=\\s*\\{" {
+                in_platform = 1
+              }
+              in_platform && /^\s*\}/ { in_platform = 0 }
+              in_platform && $0 ~ "^[[:space:]]*" key "[[:space:]]*=" {
+                sub(/"[^"]*"/, "\"" sha "\"")
+              }
+              { print }
+            ' "$flake_file" > "$tmp_file" && mv "$tmp_file" "$flake_file"
           }
           
           update_all_projects() {
@@ -81,7 +84,16 @@ jobs:
             done
           
             for platform in "${platforms[@]}"; do
-              update_hashes_for_platform "$platform"
+              for key in "${!keys[@]}"; do
+                project="${keys[$key]}"
+                version="${versions[$key]}"
+                filename="${filenames[${key},${platform}]}.sha256"
+                
+                sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}"
+                sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
+                
+                update_hash "$platform" "$key" "$sha"
+              done
             done
           }
 
