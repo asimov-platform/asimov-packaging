@@ -57,7 +57,7 @@ jobs:
             echo "Updating $project to version $version"
 
             # Only update the version string
-            sed -i -E "s|(${version_key}[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${version}\2|" "$flake_file"
+            sed -i -E "/versions[[:space:]]*=[[:space:]]*\{/,/^\s*\}/ s|(${version_key}[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${version}\2|" "$flake_file"
 
             for i in "${!platforms[@]}"; do
               platform="${platforms[$i]}"
@@ -68,7 +68,7 @@ jobs:
               echo "Updating $platform -> $filename.sha256 = $sha"
 
               # Only update the sha256 field, not the filename or URL structure
-              sed -i -E "s|(${platform}\"[[:space:]]*=[[:space:]]*\{[^}]*${filename}\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${sha}\2|" "$flake_file"
+              sed -i -E "/hashes[[:space:]]*=[[:space:]]*\{/,/^\s*\}/ s|(${platform}\"[[:space:]]*=[[:space:]]*\{[^}]*${filename}\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${sha}\2|" "$flake_file"
             done
           }
 
