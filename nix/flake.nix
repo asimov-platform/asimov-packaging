@@ -44,15 +44,15 @@
       };
 
       hashes = {
-        aarch64-linux = { # ef21144725eeccd0618357f0bb4936d1653a8968bfa8b530fa2490685470dc33
-          asimov         = "83deb2d62df03a24e5f3965a9a137efe423714c9d852763f6223ff4dc96d33c0";
-          asimov-module  = "b90bc4cda8f648b5d0f7863f141c9a314b4410edf40fd7b0f5a20c4c9aa01b30";
-          asimov-dataset = "83deb2d62df03a24e5f3965a9a137efe423714c9d852763f6223ff4dc96d33c0";
-        };
         x86_64-linux = { # 6b6e54fd490e036d864158de7d4b19a248aaf64c926ff9d3daa9db0f463d6f9c
           asimov         = "d8cb3ad98499d42ec4f89c6669264935a41b0583f6e3995b7e1382b73b654af6";
           asimov-module  = "d8cb3ad98499d42ec4f89c6669264935a41b0583f6e3995b7e1382b73b654af6";
           asimov-dataset = "abbcf6612278381d079e85b658cced97b47f71652437fa39e6eb8dc2423d6d6d";
+        };
+        aarch64-linux = { # ef21144725eeccd0618357f0bb4936d1653a8968bfa8b530fa2490685470dc33
+          asimov         = "83deb2d62df03a24e5f3965a9a137efe423714c9d852763f6223ff4dc96d33c0";
+          asimov-module  = "b90bc4cda8f648b5d0f7863f141c9a314b4410edf40fd7b0f5a20c4c9aa01b30";
+          asimov-dataset = "83deb2d62df03a24e5f3965a9a137efe423714c9d852763f6223ff4dc96d33c0";
         };
         x86_64-darwin = {
           asimov         = "eaaa532d63de98905367816b5ec6fad87815d2911d6d57bf7ddeec446f36bec5";

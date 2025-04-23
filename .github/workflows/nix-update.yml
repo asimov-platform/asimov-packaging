@@ -101,8 +101,14 @@ jobs:
 
           if ! git diff --exit-code nix/flake.nix; then
             echo "Changes detected. Committing..."
+          
             git add nix/flake.nix
             git commit -m "Update ASIMOV versions and hashes in flake.nix"
+          
+            # Pull latest and rebase if needed
+            git pull --rebase "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" "${GITHUB_REF##*/}"
+          
+            # Then push
             git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${GITHUB_REF##*/}
           else
             echo "No changes detected. Skipping commit."
