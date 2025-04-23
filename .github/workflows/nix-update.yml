@@ -64,8 +64,10 @@ jobs:
               sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}"
               sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
               
-              sed -i -E "/${platform}\s*=\s*\{/,/^\s*\}/ {
-                s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|
+              sed -i -E "/hashes\s*=\s*\{/,/^\s*\};/ {
+                /${platform}\s*=\s*\{/,/^\s*\}/ {
+                  s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|
+                }
               }" "$flake_file"
             done
           }
