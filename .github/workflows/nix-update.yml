@@ -25,53 +25,64 @@ jobs:
         run: |
           set -euxo pipefail
 
-          update_entry() {
-            project="$1"
-            binary="$2"
+          flake_file="nix/flake.nix"
 
-            if [[ "$project" == "asimov-cli" ]]; then
-              platforms=(
-                "x86_64-linux:asimov-linux-x86-gnu.gz"
-                "aarch64-linux:asimov-linux-arm-gnu.gz"
-                "x86_64-darwin:asimov-macos-x86.gz"
-                "aarch64-darwin:asimov-macos-arm.gz"
-              )
-            elif [[ "$project" == "asimov-module-cli" ]]; then
-              platforms=(
-                "x86_64-linux:asimov-module-cli-linux-x86-gnu.gz"
-                "aarch64-linux:asimov-module-cli-linux-arm-gnu.gz"
-                "x86_64-darwin:asimov-module-cli-macos-x86.gz"
-                "aarch64-darwin:asimov-module-cli-macos-arm.gz"
-              )
-            elif [[ "$project" == "asimov-dataset-cli" ]]; then
-              platforms=(
-                "x86_64-linux:asimov-dataset-cli-linux-x86-gnu.gz"
-                "aarch64-linux:asimov-dataset-cli-linux-arm-gnu.gz"
-                "x86_64-darwin:asimov-dataset-cli-macos-x86.gz"
-                "aarch64-darwin:asimov-dataset-cli-macos-arm.gz"
-              )
-            fi
+          update_project() {
+            local project="$1"
+            local version_key="$2"
+            declare -a platforms
+            declare -a filenames
 
-            latest_version=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
+            case "$project" in
+              asimov-cli)
+                platforms=("x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin")
+                filenames=("asimov-linux-x86-gnu.gz" "asimov-linux-arm-gnu.gz" "asimov-macos-x86.gz" "asimov-macos-arm.gz")
+                ;;
+              asimov-module-cli)
+                platforms=("x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin")
+                filenames=("asimov-module-cli-linux-x86-gnu.gz" "asimov-module-cli-linux-arm-gnu.gz" "asimov-module-cli-macos-x86.gz" "asimov-module-cli-macos-arm.gz")
+                ;;
+              asimov-dataset-cli)
+                platforms=("x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin")
+                filenames=("asimov-dataset-cli-linux-x86-gnu.gz" "asimov-dataset-cli-linux-arm-gnu.gz" "asimov-dataset-cli-macos-x86.gz" "asimov-dataset-cli-macos-arm.gz")
+                ;;
+              *)
+                echo "Unknown project: $project"
+                exit 1
+                ;;
+            esac
 
-            for item in "${platforms[@]}"; do
-              sys="${item%%:*}"
-              file="${item##*:}"
-              sha_url="https://github.com/asimov-platform/${project}/releases/download/${latest_version}/${file}.sha256"
+            # Get the latest version from GitHub API
+            version=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
+
+            echo "Updating $project to version $version"
+
+            # Update the version in flake.nix
+            sed -i -E "s|(${version_key}[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${version}\2|" "$flake_file"
+
+            # Loop through platforms and update each sha256
+            for i in "${!platforms[@]}"; do
+              platform="${platforms[$i]}"
+              filename="${filenames[$i]}"
+              sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}.sha256"
               sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
 
-              sed -i -E "s|(${sys}\"[[:space:]]*=.*${binary}.*${file}\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${sha}\2|" nix/flake.nix
-            done
+              echo "Updating $platform -> $filename.sha256 = $sha"
 
-            sed -i -E "s|(${binary}[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${latest_version}\2|" nix/flake.nix
+              # Replace the SHA256 for the given file
+              sed -i -E "s|(${platform}\"[[:space:]]*=[[:space:]]*\{[^}]*${filename}\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${sha}\2|" "$flake_file"
+            done
           }
 
-          update_entry "asimov-cli"         "asimov"
-          update_entry "asimov-module-cli"  "asimov-module"
-          update_entry "asimov-dataset-cli" "asimov-dataset"
+          update_project "asimov-cli"         "asimov"
+          update_project "asimov-module-cli"  "asimov-module"
+          update_project "asimov-dataset-cli" "asimov-dataset"
 
           if ! git diff --exit-code nix/flake.nix; then
+            echo "Changes detected. Committing..."
             git add nix/flake.nix
             git commit -m "Update ASIMOV versions in flake.nix"
             git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${GITHUB_REF##*/}
+          else
+            echo "No changes detected. Skipping commit."
           fi
