@@ -18,8 +18,8 @@ parts:
     
       declare -A projects=(
         [asimov]="asimov-cli:asimov-linux-${ARCH}"
-        [asimov-module]="asimov-module-cli:module-cli-linux-${ARCH}" // TODO change artifact name
-        [asimov-dataset]="asimov-dataset-cli:asimov-linux-${ARCH}" // TODO change artifact name
+        [asimov-module]="asimov-module-cli:module-cli-linux-${ARCH}" # TODO change artifact name
+        [asimov-dataset]="asimov-dataset-cli:asimov-linux-${ARCH}" # TODO change artifact name
       )
     
       for bin in "${!projects[@]}"; do
