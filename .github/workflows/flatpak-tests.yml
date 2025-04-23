@@ -6,9 +6,9 @@ on:
       - master
     paths:
       - 'flatpak/**'
-#  pull_request:
-#    paths:
-#      - 'flatpak/**'
+  pull_request:
+    paths:
+      - 'flatpak/**'
 
 jobs:
   build-and-publish:
