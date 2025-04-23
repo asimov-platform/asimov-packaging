@@ -69,7 +69,7 @@ jobs:
                 version="${versions[$key]}"
                 filename="${filenames[${key},${platform}]}.sha256"
           
-                sha_url="https://github.com/asimov-platform/${project}/releases/download/${last_version}/${filename}"
+                sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}"
                 sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
 
                 sed -i -E "/hashes\s*=\s*\{/,/^\s*\};/ {
