@@ -66,13 +66,15 @@ jobs:
               sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
 
               echo "Updating sha256 for $platform -> $filename"
+              echo "SHA_URL -> $sha_url, HASH -> $sha"
+              echo "KEY -> $key"
 
-              # Only update the sha256 field, match by key, not filename
-              sed -i -E "/hashes\s*=\s*\{/,/^\s*\};/ {
-                  /${platform}\s*=\s*\{/,/^\s*\}/ {
-                  s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|
-                }
-              }" "$flake_file"
+#              # Only update the sha256 field, match by key, not filename
+#              sed -i -E "/hashes\s*=\s*\{/,/^\s*\};/ {
+#                  /${platform}\s*=\s*\{/,/^\s*\}/ {
+#                  s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|
+#                }
+#              }" "$flake_file"
 
             done
           }
