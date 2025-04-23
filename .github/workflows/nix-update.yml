@@ -1,10 +1,9 @@
 name: Update flake.nix to use latest ASIMOV CLI versions
 
 on:
-  push:
-#  workflow_dispatch:
-#  schedule:
-#    - cron: "0 2 * * *"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
 
 jobs:
   updateAsimov:
@@ -25,11 +24,12 @@ jobs:
         run: |
           set -euxo pipefail
 
-          flake_file="nix/flake.nix"
+          flake_file=nix/flake.nix
 
           update_project() {
             local project="$1"
             local version_key="$2"
+
             declare -a platforms
             declare -a filenames
 
@@ -46,21 +46,13 @@ jobs:
                 platforms=("x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin")
                 filenames=("asimov-dataset-cli-linux-x86-gnu.gz" "asimov-dataset-cli-linux-arm-gnu.gz" "asimov-dataset-cli-macos-x86.gz" "asimov-dataset-cli-macos-arm.gz")
                 ;;
-              *)
-                echo "Unknown project: $project"
-                exit 1
-                ;;
             esac
 
-            # Get the latest version from GitHub API
             version=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
-
             echo "Updating $project to version $version"
 
-            # Update the version in flake.nix
             sed -i -E "s|(${version_key}[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${version}\2|" "$flake_file"
 
-            # Loop through platforms and update each sha256
             for i in "${!platforms[@]}"; do
               platform="${platforms[$i]}"
               filename="${filenames[$i]}"
@@ -69,13 +61,12 @@ jobs:
 
               echo "Updating $platform -> $filename.sha256 = $sha"
 
-              # Replace the SHA256 for the given file
               sed -i -E "s|(${platform}\"[[:space:]]*=[[:space:]]*\{[^}]*${filename}\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${sha}\2|" "$flake_file"
             done
           }
 
-          update_project "asimov-cli"         "asimov"
-          update_project "asimov-module-cli"  "asimov-module"
+          update_project "asimov-cli" "asimov"
+          update_project "asimov-module-cli" "asimov-module"
           update_project "asimov-dataset-cli" "asimov-dataset"
 
           if ! git diff --exit-code nix/flake.nix; then
@@ -84,7 +75,7 @@ jobs:
             git commit -m "Update ASIMOV versions in flake.nix"
           
             branch_name="${GITHUB_REF##*/}"
-            git pull --rebase origin "$branch_name"
+#            git pull --rebase origin "$branch_name"
             git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:"$branch_name"  
           else
             echo "No changes detected. Skipping commit."
