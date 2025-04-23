@@ -52,12 +52,11 @@ jobs:
                 ;;
             esac
 
-            # Get latest version
             version=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
 
             echo "Updating $project to version $version"
 
-            # Update versions block
+            # Only update the version string
             sed -i -E "s|(${version_key}[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${version}\2|" "$flake_file"
 
             for i in "${!platforms[@]}"; do
@@ -68,8 +67,8 @@ jobs:
 
               echo "Updating $platform -> $filename.sha256 = $sha"
 
-              # Update hashes block only
-              sed -i -E "s|(${platform}[[:space:]]*=[[:space:]]*\{[^}]*${version_key}[[:space:]]*=[[:space:]]*\"[^\"]*\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${sha}\2|" "$flake_file"
+              # Only update the sha256 field, not the filename or URL structure
+              sed -i -E "s|(${platform}\"[[:space:]]*=[[:space:]]*\{[^}]*${filename}\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${sha}\2|" "$flake_file"
             done
           }
 
