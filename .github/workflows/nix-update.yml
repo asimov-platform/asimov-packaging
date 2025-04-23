@@ -82,7 +82,10 @@ jobs:
             echo "Changes detected. Committing..."
             git add nix/flake.nix
             git commit -m "Update ASIMOV versions in flake.nix"
-            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${GITHUB_REF##*/}
+          
+            branch_name="${GITHUB_REF##*/}"
+            git pull --rebase origin "$branch_name"
+            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:"$branch_name"  
           else
             echo "No changes detected. Skipping commit."
           fi
