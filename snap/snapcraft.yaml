@@ -2,7 +2,7 @@ name: asimov
 base: core22
 version: 'auto'
 summary: ASIMOV CLI Snap
-description: "Bundles a prebuilt binary (gzipped) into a snap."
+description: "Bundles a prebuilt ASIMOV CLI binary (gzipped) into a snap."
 
 grade: devel
 confinement: classic
