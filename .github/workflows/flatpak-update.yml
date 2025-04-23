@@ -1,10 +1,11 @@
 name: Update Flatpak YAML to use latest version of ASIMOV CLI
 
 on:
-  workflow_dispatch:
-  schedule:
-    # At 02:00 every night – https://crontab.guru/#0_2_*_*_*
-    - cron: "0 2 * * *"
+  push:
+#  workflow_dispatch:
+#  schedule:
+#    # At 02:00 every night – https://crontab.guru/#0_2_*_*_*
+#    - cron: "0 2 * * *"
 
 jobs:
   updateFlatpak:
