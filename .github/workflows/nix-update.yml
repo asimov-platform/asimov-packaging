@@ -1,8 +1,7 @@
 name: Update flake.nix to use latest ASIMOV CLI versions
 
 on:
-  push:
-#  workflow_dispatch:
+  workflow_dispatch:
 #  schedule:
 #    - cron: "0 2 * * *"
 
@@ -56,8 +55,8 @@ jobs:
 
             echo "Updating $project to version $version"
 
-            # Only update the version string
-            sed -i -E "/versions[[:space:]]*=[[:space:]]*\{/,/^\s*\}/ s|(${version_key}[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${version}\2|" "$flake_file"
+            # Update the version string
+            sed -i -E "/versions\s*=\s*\{/,/^\s*\}/ s|(${version_key}\s*=\s*\")[^\"]*(\";)|\1${version}\2|" "$flake_file"
 
             for i in "${!platforms[@]}"; do
               platform="${platforms[$i]}"
@@ -65,10 +64,10 @@ jobs:
               sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}.sha256"
               sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
 
-              echo "Updating $platform -> $filename.sha256 = $sha"
+              echo "Updating sha256 for $platform -> $filename"
 
-              # Only update the sha256 field, not the filename or URL structure
-              sed -i -E "/hashes[[:space:]]*=[[:space:]]*\{/,/^\s*\}/ s|(${platform}\"[[:space:]]*=[[:space:]]*\{[^}]*${filename}\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${sha}\2|" "$flake_file"
+              # Update the sha256 hash only
+              sed -i -E "/hashes\s*=\s*\{/,/^\s*\}/ s|(${platform}\"[[:space:]]*=[[:space:]]*\{[^}]*${filename}\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${sha}\2|" "$flake_file"
             done
           }
 
