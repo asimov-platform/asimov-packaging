@@ -35,7 +35,7 @@ jobs:
               [asimov-module]="asimov-module-cli"
               [asimov-dataset]="asimov-dataset-cli"
             )
-
+          
             declare -A filenames=(
               [asimov,x86_64-linux]="asimov-linux-x86-gnu.gz"
               [asimov,aarch64-linux]="asimov-linux-arm-gnu.gz"
@@ -52,23 +52,25 @@ jobs:
               [asimov-dataset,x86_64-darwin]="asimov-dataset-cli-macos-x86.gz"
               [asimov-dataset,aarch64-darwin]="asimov-dataset-cli-macos-arm.gz"
             )
+          
+            declare -A versions
 
             for key in "${!keys[@]}"; do
               project="${keys[$key]}"
-              version=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
-
-              echo "Updating $project to version $version"
-
+              versions[$key]=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
+  
               # Update version in flake.nix
-              sed -i -E "/versions\s*=\s*\{/,/^\s*\}/ s|(${key}\s*=\s*\")[^\"]*(\";)|\1${version}\2|" "$flake_file"
-
-              for platform in "${platforms[@]}"; do
-                filename="${filenames[${key},${platform}]}"
-                sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}.sha256"
+              sed -i -E "/versions\s*=\s*\{/,/^\s*\}/ s|(${key}\s*=\s*\")[^\"]*(\";)|\1${versions[$key]}\2|" "$flake_file"
+            done
+          
+            for platform in "${platforms[@]}"; do
+              for key in "${!keys[@]}"; do
+                project="${keys[$key]}"
+                version="${versions[$key]}"
+                filename="${filenames[${key},${platform}]}.sha256"
+          
+                sha_url="https://github.com/asimov-platform/${project}/releases/download/${last_version}/${filename}"
                 sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
-
-                echo "Updating sha256 for $key on $platform -> $filename"
-                echo "SHA_URL -> $sha_url, HASH -> $sha"
 
                 sed -i -E "/hashes\s*=\s*\{/,/^\s*\};/ {
                   /${platform}\s*=\s*\{/,/^\s*\}/ {
