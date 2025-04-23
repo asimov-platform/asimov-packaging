@@ -18,30 +18,33 @@ parts:
 
       # ASIMOV CLI
       BINARY_NAME="asimov-linux-${ARCH}"
-      FILE="${BINARY_NAME}.gz"
+      DOWNLOAD_FILE="${BINARY_NAME}.gz"
+      FILE="asimov"
       wget -O "$FILE" "https://github.com/asimov-platform/asimov-cli/releases/latest/download/$FILE"
       gunzip "$FILE"
       chmod +x "${FILE%.gz}"
 
       # ASIMOV MODULE CLI
       BINARY_NAME="module-cli-linux-${ARCH}"
-      FILE="${BINARY_NAME}.gz"
+      DOWNLOAD_FILE="${BINARY_NAME}.gz"
+      FILE="asimov-module-cli"
       wget -O "$FILE" "https://github.com/asimov-platform/asimov-module-cli/releases/latest/download/$FILE"
       gunzip "$FILE"
       chmod +x "${FILE%.gz}"
 
       # ASIMOV DATASET CLI
       BINARY_NAME="asimov-linux-${ARCH}"
-      FILE="${BINARY_NAME}.gz"
+      DOWNLOAD_FILE="${BINARY_NAME}.gz"
+      FILE="asimov-dataset-cli"
       wget -O "$FILE" "https://github.com/asimov-platform/asimov-dataset-cli/releases/latest/download/$FILE"
       gunzip "$FILE"
       chmod +x "${FILE%.gz}"
 
     override-build: |
       mkdir -p "$SNAPCRAFT_PART_INSTALL/bin"
-      mv "asimov-linux-${ARCH}" "$SNAPCRAFT_PART_INSTALL/bin/asimov"
-      mv "module-cli-linux-${ARCH}" "$SNAPCRAFT_PART_INSTALL/bin/asimov-module"
-      mv "asimov-linux-${ARCH}" "$SNAPCRAFT_PART_INSTALL/bin/asimov-dataset"
+      mv "asimov" "$SNAPCRAFT_PART_INSTALL/bin/asimov"
+      mv "asimov-module-cli" "$SNAPCRAFT_PART_INSTALL/bin/asimov-module"
+      mv "asimov-dataset-cli" "$SNAPCRAFT_PART_INSTALL/bin/asimov-dataset"
       snapcraftctl build
 
 apps:
