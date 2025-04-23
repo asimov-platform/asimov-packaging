@@ -99,11 +99,11 @@ jobs:
 
           update_all_projects
 
-          if ! git diff --exit-code "$flake_file"; then
-            echo "Changes detected. Committing..."
-            git add "$flake_file"
-            git commit -m "Update ASIMOV versions and hashes in flake.nix"
-            git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${GITHUB_REF##*/} 
-          else
-            echo "No changes detected. Skipping commit."
-          fi
+#          if ! git diff --exit-code "$flake_file"; then
+#            echo "Changes detected. Committing..."
+#            git add "$flake_file"
+#            git commit -m "Update ASIMOV versions and hashes in flake.nix"
+#            git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${GITHUB_REF##*/}
+#          else
+#            echo "No changes detected. Skipping commit."
+#          fi
