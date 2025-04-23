@@ -15,36 +15,29 @@ parts:
       snapcraftctl pull
 
       ARCH=${ARCH_NAME:-x86-gnu}
-
-      # ASIMOV CLI
-      BINARY_NAME="asimov-linux-${ARCH}"
-      FILE="${BINARY_NAME}.gz"
-      wget "https://github.com/asimov-platform/asimov-cli/releases/latest/download/$FILE"
-      gunzip "$FILE"
-      chmod +x "$BINARY_NAME"
-      mv "$BINARY_NAME" asimov
-
-      # ASIMOV MODULE CLI
-      BINARY_NAME="module-cli-linux-${ARCH}"
-      FILE="${BINARY_NAME}.gz"
-      wget "https://github.com/asimov-platform/asimov-module-cli/releases/latest/download/$FILE"
-      gunzip "$FILE"
-      chmod +x "$BINARY_NAME"
-      mv "$BINARY_NAME" asimov-module-cli
-      
-      # ASIMOV DATASET CLI
-      BINARY_NAME="asimov-linux-${ARCH}"
-      FILE="${BINARY_NAME}.gz"
-      wget "https://github.com/asimov-platform/asimov-dataset-cli/releases/latest/download/$FILE"
-      gunzip "$FILE"
-      chmod +x "$BINARY_NAME"
-      mv "$BINARY_NAME" asimov-dataset-cli
+    
+      declare -A projects=(
+        [asimov]="asimov-cli:asimov-linux-${ARCH}"
+        [asimov-module]="asimov-module-cli:module-cli-linux-${ARCH}" // TODO change artifact name
+        [asimov-dataset]="asimov-dataset-cli:asimov-linux-${ARCH}" // TODO change artifact name
+      )
+    
+      for bin in "${!projects[@]}"; do
+        IFS=":" read -r repo binary <<< "${projects[$bin]}"
+        FILE="${binary}.gz"
+        
+        echo "Downloading $FILE from $repo"
+        wget "https://github.com/asimov-platform/${repo}/releases/latest/download/$FILE"
+        gunzip "$FILE"
+        chmod +x "$binary"
+        mv "$binary" "$bin"
+      done
 
     override-build: |
       mkdir -p "$SNAPCRAFT_PART_INSTALL/bin"
-      mv "asimov" "$SNAPCRAFT_PART_INSTALL/bin/asimov"
-      mv "asimov-module-cli" "$SNAPCRAFT_PART_INSTALL/bin/asimov-module"
-      mv "asimov-dataset-cli" "$SNAPCRAFT_PART_INSTALL/bin/asimov-dataset"
+      mv asimov "$SNAPCRAFT_PART_INSTALL/bin/asimov"
+      mv asimov-module "$SNAPCRAFT_PART_INSTALL/bin/asimov-module"
+      mv asimov-dataset "$SNAPCRAFT_PART_INSTALL/bin/asimov-dataset"
       snapcraftctl build
 
 apps:
