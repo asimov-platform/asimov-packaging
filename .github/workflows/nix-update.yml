@@ -68,12 +68,12 @@ jobs:
               echo "Updating sha256 for $platform -> $filename"
 
               # Only update the sha256 field, match by key, not filename
-              sed -i -E "/hashes\s*=\s*\{/,/^\s*\}/ {
-                /${platform}\s*=\s*\{/,/^\s*\}/ {
-                s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|g
-              }
+              sed -i -E "/hashes\s*=\s*\{/,/^\s*\};/ {
+                  /${platform}\s*=\s*\{/,/^\s*\}/ {
+                  s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|
+                }
               }" "$flake_file"
-            
+
             done
           }
 
