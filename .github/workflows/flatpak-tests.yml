@@ -66,4 +66,7 @@ jobs:
       - name: Install and Run CLI
         run: |
           flatpak install -y --user asimov-cli so.asimov.cli
+          
           flatpak run so.asimov.cli --version
+          flatpak run so.asimov.cli module --version
+          flatpak run so.asimov.cli dataset --version

@@ -22,21 +22,44 @@ jobs:
       - name: Update Flatpak YAML
         shell: bash
         run: |
-          set -euxo pipefail
-          
+          set -euo pipefail
+
           FLATPAK_YAML="flatpak/so.asimov.cli.yaml"
-          LATEST_VERSION="$(curl -s https://api.github.com/repos/asimov-platform/asimov-cli/releases/latest | jq -r .tag_name)"
-          
-          sed -i "s|https://github.com/asimov-platform/asimov-cli/releases/download/[^/]*|https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}|g" "$FLATPAK_YAML"
-          
-          x86_64_hex="$(curl -sL "https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}/asimov-linux-x86-gnu.gz.sha256" | cut -d ' ' -f1)"
-          sed -i -E "/asimov-linux-x86-gnu.gz/{N;s/(sha256: \").*(\".*)/\1${x86_64_hex}\2/}" "$FLATPAK_YAML"
-          
-          aarch64_hex="$(curl -sL "https://github.com/asimov-platform/asimov-cli/releases/download/${LATEST_VERSION}/asimov-linux-arm-gnu.gz.sha256" | cut -d ' ' -f1)"
-          sed -i -E "/asimov-linux-arm-gnu.gz/{N;s/(sha256: \").*(\".*)/\1${aarch64_hex}\2/}" "$FLATPAK_YAML"
-          
+
+          declare -A filenames=(
+            [asimov-cli,x86_64]="asimov-linux-x86-gnu.gz"
+            [asimov-cli,aarch64]="asimov-linux-arm-gnu.gz"
+            [asimov-module-cli,x86_64]="asimov-module-cli-linux-x86-gnu.gz"
+            [asimov-module-cli,aarch64]="asimov-module-cli-linux-arm-gnu.gz"
+            [asimov-dataset-cli,x86_64]="asimov-dataset-cli-linux-x86-gnu.gz"
+            [asimov-dataset-cli,aarch64]="asimov-dataset-cli-linux-arm-gnu.gz"
+          )
+
+          declare -A versions
+
+          for key in "${!filenames[@]}"; do
+            IFS=',' read -r project arch <<< "$key"
+            archive_name="${filenames[$key]}"
+
+            if [[ -z "${versions[$project]:-}" ]]; then
+              versions[$project]=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
+            fi
+
+            version="${versions[$project]}"
+            url="https://github.com/asimov-platform/${project}/releases/download/${version}/${archive_name}"
+            sha=$(curl -sL "${url}.sha256" | cut -d ' ' -f1)
+
+            # Update URL
+            sed -i "s|https://github.com/asimov-platform/${project}/releases/download/[^/]*/${archive_name}|${url}|" "$FLATPAK_YAML"
+
+            # Update sha256
+            sed -i -E "/${archive_name}/{n;s/(sha256: \")[^\"]*(\")/\1${sha}\2/}" "$FLATPAK_YAML"
+          done
+
           if ! git diff --exit-code "$FLATPAK_YAML"; then
             git add "$FLATPAK_YAML"
-            git commit -m "Update Flatpak YAML to ${LATEST_VERSION}"
-            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref }}
+            git commit -m "Update Flatpak YAML to latest ASIMOV versions"
+            git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:"${GITHUB_REF#refs/heads/}"
+          else
+            echo "No changes detected."
           fi
