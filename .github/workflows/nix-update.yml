@@ -27,8 +27,6 @@ jobs:
 
           flake_file="nix/flake.nix"
 
-          declare -a platforms=("x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin")
-
           declare -A keys=(
             [asimov]="asimov-cli"
             [asimov-module]="asimov-module-cli"
@@ -40,64 +38,48 @@ jobs:
             [asimov,aarch64-linux]="asimov-linux-arm-gnu.gz"
             [asimov,x86_64-darwin]="asimov-macos-x86.gz"
             [asimov,aarch64-darwin]="asimov-macos-arm.gz"
-
             [asimov-module,x86_64-linux]="asimov-module-cli-linux-x86-gnu.gz"
             [asimov-module,aarch64-linux]="asimov-module-cli-linux-arm-gnu.gz"
             [asimov-module,x86_64-darwin]="asimov-module-cli-macos-x86.gz"
             [asimov-module,aarch64-darwin]="asimov-module-cli-macos-arm.gz"
-
             [asimov-dataset,x86_64-linux]="asimov-dataset-cli-linux-x86-gnu.gz"
             [asimov-dataset,aarch64-linux]="asimov-dataset-cli-linux-arm-gnu.gz"
             [asimov-dataset,x86_64-darwin]="asimov-dataset-cli-macos-x86.gz"
             [asimov-dataset,aarch64-darwin]="asimov-dataset-cli-macos-arm.gz"
           )
 
+          declare -a platforms=("x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin")
           declare -A versions
 
           update_hash() {
-            local platform="$1"
-            local key="$2"
-            local sha="$3"
-            local tmp_file
-            tmp_file="$(mktemp)"
-
+            local platform="$1" key="$2" sha="$3"
+            tmp_file=$(mktemp)
             awk -v platform="$platform" -v key="$key" -v sha="$sha" '
               BEGIN { in_hashes = 0; in_platform = 0 }
               /^\s*hashes\s*=\s*\{/ { in_hashes = 1 }
-              in_hashes && $0 ~ "^[[:space:]]*" platform "[[:space:]]*=\\s*\\{" {
-                in_platform = 1
-              }
+              in_hashes && $0 ~ "^[[:space:]]*" platform "[[:space:]]*=\\s*\\{" { in_platform = 1 }
               in_platform && /^\s*\}/ { in_platform = 0 }
-              in_platform && $0 ~ "^[[:space:]]*" key "[[:space:]]*=" {
-                sub(/"[^"]*"/, "\"" sha "\"")
-              }
+              in_platform && $0 ~ "^[[:space:]]*" key "[[:space:]]*=" { sub(/"[^"]*"/, "\"" sha "\"") }
               { print }
             ' "$flake_file" > "$tmp_file" && mv "$tmp_file" "$flake_file"
           }
 
-          update_all_projects() {
+          for key in "${!keys[@]}"; do
+            project="${keys[$key]}"
+            versions[$key]=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
+            sed -i -E "/versions\s*=\s*\{/,/^\s*\}/ s|(${key}\s*=\s*")[^"]*(";)|\1${versions[$key]}\2|" "$flake_file"
+          done
+
+          for platform in "${platforms[@]}"; do
             for key in "${!keys[@]}"; do
               project="${keys[$key]}"
-              versions[$key]=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
-
-              sed -i -E "/versions\s*=\s*\{/,/^\s*\}/ s|(${key}\s*=\s*\")[^\"]*(\";)|\1${versions[$key]}\2|" "$flake_file"
+              version="${versions[$key]}"
+              filename="${filenames[${key},${platform}]}.sha256"
+              sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}"
+              sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
+              update_hash "$platform" "$key" "$sha"
             done
-
-            for platform in "${platforms[@]}"; do
-              for key in "${!keys[@]}"; do
-                project="${keys[$key]}"
-                version="${versions[$key]}"
-                filename="${filenames[${key},${platform}]}.sha256"
-
-                sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}"
-                sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
-                
-                update_hash "$platform" "$key" "$sha"
-              done
-            done
-          }
-
-          update_all_projects
+          done
 
           if ! git diff --exit-code "$flake_file"; then
             echo "Changes detected. Committing..."

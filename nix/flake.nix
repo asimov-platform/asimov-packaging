@@ -44,12 +44,12 @@
       };
 
       hashes = {
-        x86_64-linux = { # 6b6e54fd490e036d864158de7d4b19a248aaf64c926ff9d3daa9db0f463d6f9c
+        x86_64-linux = {
           asimov         = "6b6e54fd490e036d864158de7d4b19a248aaf64c926ff9d3daa9db0f463d6f9c";
           asimov-module  = "dc0c2951287df99aa20d50e2525395c62de1c2cbc716c075b9fff5003cbaa4d3";
           asimov-dataset = "f154eac9ae686cfea8d5e72b5ca96c45f77ac50e7585ca09c53e4306954044e5";
         };
-        aarch64-linux = { # ef21144725eeccd0618357f0bb4936d1653a8968bfa8b530fa2490685470dc33
+        aarch64-linux = {
           asimov         = "ef21144725eeccd0618357f0bb4936d1653a8968bfa8b530fa2490685470dc33";
           asimov-module  = "be254a76dbe1a529c98dc244a1fa7dffca046817590295f08c5a605761dde55b";
           asimov-dataset = "73c35e9a608b22ae8c041e3322757eb37aedd5af2072ed867d0819509ad893b7";
