@@ -23,11 +23,11 @@ jobs:
       - name: Update Flatpak YAML
         shell: bash
         run: |
-          set -euxo pipefail
+          set -euo pipefail
 
           FILE="flatpak/so.asimov.cli.yaml"
 
-          declare -A projects=(
+          declare -A keys=(
             [asimov]="asimov-cli"
             [asimov-module]="asimov-module-cli"
             [asimov-dataset]="asimov-dataset-cli"
@@ -42,20 +42,30 @@ jobs:
             [asimov-dataset,aarch64]="asimov-linux-arm-gnu.gz"
           )
 
-          for key in "${!projects[@]}"; do
-            project="${projects[$key]}"
+          declare -A versions
+
+          update_flatpak_entry() {
+            local arch="$1" key="$2" sha="$3" version="$4"
+            local file="${filenames[${key},${arch}]}"
+            local url="https://github.com/asimov-platform/${keys[$key]}/releases/download/${version}/${file}"
+
+            sed -i "s|https://github.com/asimov-platform/${keys[$key]}/releases/download/[^/]*/${file}|${url}|" "$FILE"
+            sed -i -E "/${file}/{n;s/(sha256: \"[^\"]*\")/sha256: \"${sha}\"/}" "$FILE"
+          }
+
+          for key in "${!keys[@]}"; do
+            project="${keys[$key]}"
             version=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
+            versions[$key]="$version"
+          done
 
+          for key in "${!keys[@]}"; do
             for arch in x86_64 aarch64; do
+              version="${versions[$key]}"
               file="${filenames[${key},${arch}]}"
-              url="https://github.com/asimov-platform/${project}/releases/download/${version}/${file}"
-              sha=$(curl -sL "${url}.sha256" | cut -d ' ' -f1)
-
-              # Update URL
-              sed -i "s|https://github.com/asimov-platform/${project}/releases/download/[^/]*/${file}|${url}|" "$FILE"
-
-              # Update sha256
-              sed -i -E "/${file}/{n;s/(sha256: \")[^\"]*(\")/\1${sha}\2/}" "$FILE"
+              sha_url="https://github.com/asimov-platform/${keys[$key]}/releases/download/${version}/${file}.sha256"
+              sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
+              update_flatpak_entry "$arch" "$key" "$sha" "$version"
             done
           done
 
