@@ -26,57 +26,60 @@ jobs:
           set -euxo pipefail
 
           flake_file="nix/flake.nix"
-
-          update_all_projects() {
-            declare -a platforms=("x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin")
-
-            declare -A keys=(
-              [asimov]="asimov-cli"
-              [asimov-module]="asimov-module-cli"
-              [asimov-dataset]="asimov-dataset-cli"
-            )
           
-            declare -A filenames=(
-              [asimov,x86_64-linux]="asimov-linux-x86-gnu.gz"
-              [asimov,aarch64-linux]="asimov-linux-arm-gnu.gz"
-              [asimov,x86_64-darwin]="asimov-macos-x86.gz"
-              [asimov,aarch64-darwin]="asimov-macos-arm.gz"
-
-              [asimov-module,x86_64-linux]="asimov-module-cli-linux-x86-gnu.gz"
-              [asimov-module,aarch64-linux]="asimov-module-cli-linux-arm-gnu.gz"
-              [asimov-module,x86_64-darwin]="asimov-module-cli-macos-x86.gz"
-              [asimov-module,aarch64-darwin]="asimov-module-cli-macos-arm.gz"
-
-              [asimov-dataset,x86_64-linux]="asimov-dataset-cli-linux-x86-gnu.gz"
-              [asimov-dataset,aarch64-linux]="asimov-dataset-cli-linux-arm-gnu.gz"
-              [asimov-dataset,x86_64-darwin]="asimov-dataset-cli-macos-x86.gz"
-              [asimov-dataset,aarch64-darwin]="asimov-dataset-cli-macos-arm.gz"
-            )
-          
-            declare -A versions
-
-            for key in "${!keys[@]}"; do
-              project="${keys[$key]}"
-              versions[$key]=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
+          declare -a platforms=("x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin")
   
-              # Update version in flake.nix
-              sed -i -E "/versions\s*=\s*\{/,/^\s*\}/ s|(${key}\s*=\s*\")[^\"]*(\";)|\1${versions[$key]}\2|" "$flake_file"
-            done
+          declare -A keys=(
+            [asimov]="asimov-cli"
+            [asimov-module]="asimov-module-cli"
+            [asimov-dataset]="asimov-dataset-cli"
+          )
           
-            aarch64linux="aarch64-linux"
+          declare -A filenames=(
+            [asimov,x86_64-linux]="asimov-linux-x86-gnu.gz"
+            [asimov,aarch64-linux]="asimov-linux-arm-gnu.gz"
+            [asimov,x86_64-darwin]="asimov-macos-x86.gz"
+            [asimov,aarch64-darwin]="asimov-macos-arm.gz"
+          
+            [asimov-module,x86_64-linux]="asimov-module-cli-linux-x86-gnu.gz"
+            [asimov-module,aarch64-linux]="asimov-module-cli-linux-arm-gnu.gz"
+            [asimov-module,x86_64-darwin]="asimov-module-cli-macos-x86.gz"
+            [asimov-module,aarch64-darwin]="asimov-module-cli-macos-arm.gz"
+          
+            [asimov-dataset,x86_64-linux]="asimov-dataset-cli-linux-x86-gnu.gz"
+            [asimov-dataset,aarch64-linux]="asimov-dataset-cli-linux-arm-gnu.gz"
+            [asimov-dataset,x86_64-darwin]="asimov-dataset-cli-macos-x86.gz"
+            [asimov-dataset,aarch64-darwin]="asimov-dataset-cli-macos-arm.gz"
+          )
+          
+          declare -A versions
+          
+          update_hashes_for_platform() {
+            local platform="$1"
             for key in "${!keys[@]}"; do
               project="${keys[$key]}"
               version="${versions[$key]}"
-              filename="${filenames[${key},${aarch64linux}]}.sha256"
-          
+              filename="${filenames[${key},${platform}]}.sha256"
+              
               sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}"
               sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
-
-              sed -i -E "/hashes\s*=\s*\{/,/^\s*\};/ {
-                /${aarch64linux}\s*=\s*\{/,/^\s*\}/ {
-                  s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|
-                }
+              
+              sed -i -E "/${platform}\s*=\s*\{/,/^\s*\}/ {
+                s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|
               }" "$flake_file"
+            done
+          }
+          
+          update_all_projects() {
+            for key in "${!keys[@]}"; do
+              project="${keys[$key]}"
+              versions[$key]=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
+              
+              sed -i -E "/versions\s*=\s*\{/,/^\s*\}/ s|(${key}\s*=\s*\")[^\"]*(\";)|\1${versions[$key]}\2|" "$flake_file"
+            done
+          
+            for platform in "${platforms[@]}"; do
+              update_hashes_for_platform "$platform"
             done
           }
 
