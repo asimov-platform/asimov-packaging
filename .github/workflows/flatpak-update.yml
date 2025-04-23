@@ -24,55 +24,44 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
+  
           FILE="flatpak/so.asimov.cli.yaml"
-
-          declare -A keys=(
+          
+          declare -A projects=(
             [asimov]="asimov-cli"
             [asimov-module]="asimov-module-cli"
             [asimov-dataset]="asimov-dataset-cli"
           )
-
+          
           declare -A filenames=(
             [asimov,x86_64]="asimov-linux-x86-gnu.gz"
             [asimov,aarch64]="asimov-linux-arm-gnu.gz"
-            [asimov-module,x86_64]="module-cli-linux-x86-gnu.gz"
-            [asimov-module,aarch64]="module-cli-linux-arm-gnu.gz"
-            [asimov-dataset,x86_64]="asimov-linux-x86-gnu.gz"
-            [asimov-dataset,aarch64]="asimov-linux-arm-gnu.gz"
+            [asimov-module,x86_64]="asimov-module-cli-linux-x86-gnu.gz"
+            [asimov-module,aarch64]="asimov-module-cli-linux-arm-gnu.gz"
+            [asimov-dataset,x86_64]="asimov-dataset-cli-linux-x86-gnu.gz"
+            [asimov-dataset,aarch64]="asimov-dataset-cli-linux-arm-gnu.gz"
           )
-
-          declare -A versions
-
-          update_flatpak_entry() {
-            local arch="$1" key="$2" sha="$3" version="$4"
-            local file="${filenames[${key},${arch}]}"
-            local url="https://github.com/asimov-platform/${keys[$key]}/releases/download/${version}/${file}"
-
-            sed -i "s|https://github.com/asimov-platform/${keys[$key]}/releases/download/[^/]*/${file}|${url}|" "$FILE"
-            sed -i -E "/${file}/{n;s/(sha256: \"[^\"]*\")/sha256: \"${sha}\"/}" "$FILE"
-          }
-
-          for key in "${!keys[@]}"; do
-            project="${keys[$key]}"
+          
+          for key in "${!projects[@]}"; do
+            project="${projects[$key]}"
             version=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
-            versions[$key]="$version"
-          done
-
-          for key in "${!keys[@]}"; do
+        
             for arch in x86_64 aarch64; do
-              version="${versions[$key]}"
               file="${filenames[${key},${arch}]}"
-              sha_url="https://github.com/asimov-platform/${keys[$key]}/releases/download/${version}/${file}.sha256"
-              sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
-              update_flatpak_entry "$arch" "$key" "$sha" "$version"
+              url="https://github.com/asimov-platform/${project}/releases/download/${version}/${file}"
+              sha=$(curl -sL "${url}.sha256" | cut -d ' ' -f1)
+              
+              # Update URL
+              sed -i "s|https://github.com/asimov-platform/${project}/releases/download/[^/]*/${file}|${url}|" "$FILE"
+          
+              # Update sha256
+              sed -i -E "/${file}/{n;s/(sha256: \")[^\"]*(\")/\1${sha}\2/}" "$FILE"
             done
           done
-
+          
           if ! git diff --exit-code "$FILE"; then
             git diff "$FILE"
-          
-            # Uncomment when ready to commit and push
+            # Uncomment when you're ready to push:
             # git add "$FILE"
             # git commit -m "Update Flatpak YAML to latest ASIMOV versions"
             # git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:"${GITHUB_REF#refs/heads/}"
