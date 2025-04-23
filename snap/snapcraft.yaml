@@ -14,15 +14,10 @@ parts:
     override-pull: |
       snapcraftctl pull
 
-      ARCH=${CRAFT_TARGET_ARCH:-x86_64}
-      PLATFORM=""
-      case "$ARCH" in
-        amd64|x86_64)   PLATFORM="x86-gnu" ;;
-        arm64|aarch64)  PLATFORM="arm-gnu" ;;
-        *) echo "Unsupported architecture: $ARCH" && exit 1 ;;
-      esac
+      ARCH="${BINARY_NAME##*-}"
+      PLATFORM="$ARCH"
 
-      for name in asimov module-cli asimov; do
+      for name in asimov module-cli dataset-cli; do
         FILE="${name}-linux-${PLATFORM}.gz"
         wget -O "${name}.gz" "https://github.com/asimov-platform/${name}/releases/latest/download/${FILE}"
         gunzip "${name}.gz"
