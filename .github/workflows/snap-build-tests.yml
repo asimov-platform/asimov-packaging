@@ -38,7 +38,7 @@ jobs:
       - name: Build Snap for ${{ matrix.arch }}
         working-directory: snap
         env:
-          BINARY_NAME: asimov-linux-${{ matrix.arch }}
+          ARCH_NAME: ${{ matrix.arch }}
         run: |
           snapcraft --destructive-mode
           mv *.snap "../asimov-${{ matrix.arch }}.snap"
