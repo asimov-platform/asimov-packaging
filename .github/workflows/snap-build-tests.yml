@@ -2,17 +2,17 @@ name: Snap Build & Test
 
 on:
   push:
-#    branches:
-#      - master
-#    paths:
-#      - 'snap/**'
-#  pull_request:
-#    paths:
-#      - 'snap/**'
-#  workflow_dispatch:
-#  schedule:
-#    # At 02:00 every night – https://crontab.guru/#0_2_*_*_*
-#    - cron: "0 2 * * *"
+    branches:
+      - master
+    paths:
+      - 'snap/**'
+  pull_request:
+    paths:
+      - 'snap/**'
+  workflow_dispatch:
+  schedule:
+    # At 02:00 every night – https://crontab.guru/#0_2_*_*_*
+    - cron: "0 2 * * *"
 
 jobs:
   build:
