@@ -63,21 +63,68 @@ jobs:
               sed -i -E "/versions\s*=\s*\{/,/^\s*\}/ s|(${key}\s*=\s*\")[^\"]*(\";)|\1${versions[$key]}\2|" "$flake_file"
             done
           
-            for platform in "${platforms[@]}"; do
-              for key in "${!keys[@]}"; do
-                project="${keys[$key]}"
-                version="${versions[$key]}"
-                filename="${filenames[${key},${platform}]}.sha256"
+            aarch64linux="aarch64-linux"
+            for key in "${!keys[@]}"; do
+              project="${keys[$key]}"
+              version="${versions[$key]}"
+              filename="${filenames[${key},${aarch64linux}]}.sha256"
           
-                sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}"
-                sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
+              sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}"
+              sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
 
-                sed -i -E "/hashes\s*=\s*\{/,/^\s*\};/ {
-                  /${platform}\s*=\s*\{/,/^\s*\}/ {
-                    s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|
-                  }
-                }" "$flake_file"
-              done
+              sed -i -E "/hashes\s*=\s*\{/,/^\s*\};/ {
+                /${aarch64linux}\s*=\s*\{/,/^\s*\}/ {
+                  s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|
+                }
+              }" "$flake_file"
+            done
+          
+            x86darwin="x86_64-darwin"
+            for key in "${!keys[@]}"; do
+              project="${keys[$key]}"
+              version="${versions[$key]}"
+              filename="${filenames[${key},${x86darwin}]}.sha256"
+          
+              sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}"
+              sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
+
+              sed -i -E "/hashes\s*=\s*\{/,/^\s*\};/ {
+                /${x86darwin}\s*=\s*\{/,/^\s*\}/ {
+                  s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|
+                }
+              }" "$flake_file"
+            done
+          
+            aarch64darwin="aarch64-darwin"
+            for key in "${!keys[@]}"; do
+              project="${keys[$key]}"
+              version="${versions[$key]}"
+              filename="${filenames[${key},${aarch64darwin}]}.sha256"
+          
+              sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}"
+              sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
+
+              sed -i -E "/hashes\s*=\s*\{/,/^\s*\};/ {
+                /${aarch64darwin}\s*=\s*\{/,/^\s*\}/ {
+                  s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|
+                }
+              }" "$flake_file"
+            done
+          
+            x86linux="x86_64-linux"
+            for key in "${!keys[@]}"; do
+              project="${keys[$key]}"
+              version="${versions[$key]}"
+              filename="${filenames[${key},${x86linux}]}.sha256"
+          
+              sha_url="https://github.com/asimov-platform/${project}/releases/download/${version}/${filename}"
+              sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
+
+              sed -i -E "/hashes\s*=\s*\{/,/^\s*\};/ {
+                /${x86linux}\s*=\s*\{/,/^\s*\}/ {
+                  s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|
+                }
+              }" "$flake_file"
             done
           }
 
