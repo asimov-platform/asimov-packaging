@@ -29,7 +29,7 @@ jobs:
 
           update_project() {
             local project="$1"
-            local version_key="$2"
+            local key="$2"
             declare -a platforms
             declare -a filenames
 
@@ -57,7 +57,7 @@ jobs:
             echo "Updating $project to version $version"
 
             # Update the version string
-            sed -i -E "/versions\s*=\s*\{/,/^\s*\}/ s|(${version_key}\s*=\s*\")[^\"]*(\";)|\1${version}\2|" "$flake_file"
+            sed -i -E "/versions\s*=\s*\{/,/^\s*\}/ s|(${key}\s*=\s*\")[^\"]*(\";)|\1${version}\2|" "$flake_file"
 
             for i in "${!platforms[@]}"; do
               platform="${platforms[$i]}"
@@ -68,7 +68,7 @@ jobs:
               echo "Updating sha256 for $platform -> $filename"
 
               # Only update the sha256 field, match by key, not filename
-              sed -i -E "/hashes\s*=\s*\{/,/^\s*\}/ s|(${platform}\"\s*=\s*\{[^}]*${version_key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|" "$flake_file"
+              sed -i -E "/haches\s*=\s*\{/,/^\s*\}/ s|(${key}\s*=\s*\")[^\"]*(\";)|\1${sha}\2|" "$flake_file"
             
             done
           }
