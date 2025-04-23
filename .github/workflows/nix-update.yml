@@ -21,7 +21,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Fetch latest versions and update flake.nix
-        shell: bash
         run: |
           set -euxo pipefail
 
@@ -52,7 +51,7 @@ jobs:
             version=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
             echo "Updating $project to version $version"
 
-            sed -i -E "s|(${version_key}[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${version}\2|" "$flake_file"
+            sed -i -E "s|(${version_key}[[:space:]]*=[[:space:]]*\")[^"]*(";)|${version}|" "$flake_file"
 
             for i in "${!platforms[@]}"; do
               platform="${platforms[$i]}"
@@ -62,7 +61,7 @@ jobs:
 
               echo "Updating $platform -> $filename.sha256 = $sha"
 
-              sed -i -E "s|(${platform}\"[[:space:]]*=[[:space:]]*\{[^}]*${filename}\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${sha}\2|" "$flake_file"
+              sed -i -E "s|(${platform}\"[[:space:]]*=[[:space:]]*\{[^}]*${filename}\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\")[^"]*(";)|${sha}|" "$flake_file"
             done
           }
 
@@ -81,3 +80,4 @@ jobs:
           else
             echo "No changes detected. Skipping commit."
           fi
+        shell: bash
