@@ -1,10 +1,9 @@
 name: Update flake.nix to use latest ASIMOV CLI versions
 
 on:
-  push:
-#  workflow_dispatch:
-#  schedule:
-#    - cron: "0 2 * * *"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
 
 jobs:
   updateAsimov:
