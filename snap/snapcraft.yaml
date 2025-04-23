@@ -18,27 +18,27 @@ parts:
 
       # ASIMOV CLI
       BINARY_NAME="asimov-linux-${ARCH}"
-      DOWNLOAD_FILE="${BINARY_NAME}.gz"
-      FILE="asimov"
-      wget -O "$FILE" "https://github.com/asimov-platform/asimov-cli/releases/latest/download/$DOWNLOAD_FILE"
+      FILE="${BINARY_NAME}.gz"
+      wget "https://github.com/asimov-platform/asimov-cli/releases/latest/download/$FILE"
       gunzip "$FILE"
-      chmod +x "${FILE%.gz}"
+      chmod +x "$BINARY_NAME"
+      mv "$BINARY_NAME" asimov
 
       # ASIMOV MODULE CLI
       BINARY_NAME="module-cli-linux-${ARCH}"
-      DOWNLOAD_FILE="${BINARY_NAME}.gz"
-      FILE="asimov-module-cli"
-      wget -O "$FILE" "https://github.com/asimov-platform/asimov-module-cli/releases/latest/download/$DOWNLOAD_FILE"
+      FILE="${BINARY_NAME}.gz"
+      wget "https://github.com/asimov-platform/asimov-module-cli/releases/latest/download/$FILE"
       gunzip "$FILE"
-      chmod +x "${FILE%.gz}"
-
+      chmod +x "$BINARY_NAME"
+      mv "$BINARY_NAME" asimov-module-cli
+      
       # ASIMOV DATASET CLI
       BINARY_NAME="asimov-linux-${ARCH}"
-      DOWNLOAD_FILE="${BINARY_NAME}.gz"
-      FILE="asimov-dataset-cli"
-      wget -O "$FILE" "https://github.com/asimov-platform/asimov-dataset-cli/releases/latest/download/$DOWNLOAD_FILE"
+      FILE="${BINARY_NAME}.gz"
+      wget "https://github.com/asimov-platform/asimov-dataset-cli/releases/latest/download/$FILE"
       gunzip "$FILE"
-      chmod +x "${FILE%.gz}"
+      chmod +x "$BINARY_NAME"
+      mv "$BINARY_NAME" asimov-dataset-cli
 
     override-build: |
       mkdir -p "$SNAPCRAFT_PART_INSTALL/bin"
