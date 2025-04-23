@@ -28,13 +28,13 @@ modules:
       # ASIMOV MODULE CLI
       - type: file
         url: "https://github.com/asimov-platform/asimov-module-cli/releases/download/25.0.0-dev.2/asimov-module-cli-linux-x86-gnu.gz"
-        sha256: "d8cb3ad98499d42ec4f89c6669264935a41b0583f6e3995b7e1382b73b654af6"
+        sha256: "Not"
         only-arches: [x86_64]
         dest-filename: "asimov-module.gz"
 
       - type: file
         url: "https://github.com/asimov-platform/asimov-module-cli/releases/download/25.0.0-dev.2/asimov-module-cli-linux-arm-gnu.gz"
-        sha256: "b90bc4cda8f648b5d0f7863f141c9a314b4410edf40fd7b0f5a20c4c9aa01b30"
+        sha256: "Not"
         only-arches: [aarch64]
         dest-filename: "asimov-module.gz"
 
