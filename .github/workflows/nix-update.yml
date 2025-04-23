@@ -1,10 +1,9 @@
 name: Update flake.nix to use latest ASIMOV CLI versions
 
 on:
-  push:
-#  workflow_dispatch:
-#  schedule:
-#    - cron: "0 2 * * *"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
 
 jobs:
   updateAsimov:
@@ -26,38 +25,44 @@ jobs:
           set -euxo pipefail
 
           update_entry() {
-            local project="$1"
-            local binary="$2"
-            declare -A files
+            project="$1"
+            binary="$2"
 
             if [[ "$project" == "asimov-cli" ]]; then
-              files[x86_64-linux]="asimov-linux-x86-gnu.gz"
-              files[aarch64-linux]="asimov-linux-arm-gnu.gz"
-              files[x86_64-darwin]="asimov-macos-x86.gz"
-              files[aarch64-darwin]="asimov-macos-arm.gz"
+              platforms=(
+                "x86_64-linux:asimov-linux-x86-gnu.gz"
+                "aarch64-linux:asimov-linux-arm-gnu.gz"
+                "x86_64-darwin:asimov-macos-x86.gz"
+                "aarch64-darwin:asimov-macos-arm.gz"
+              )
             elif [[ "$project" == "asimov-module-cli" ]]; then
-              files[x86_64-linux]="asimov-module-cli-linux-x86-gnu.gz"
-              files[aarch64-linux]="asimov-module-cli-linux-arm-gnu.gz"
-              files[x86_64-darwin]="asimov-module-cli-macos-x86.gz"
-              files[aarch64-darwin]="asimov-module-cli-macos-arm.gz"
+              platforms=(
+                "x86_64-linux:asimov-module-cli-linux-x86-gnu.gz"
+                "aarch64-linux:asimov-module-cli-linux-arm-gnu.gz"
+                "x86_64-darwin:asimov-module-cli-macos-x86.gz"
+                "aarch64-darwin:asimov-module-cli-macos-arm.gz"
+              )
             elif [[ "$project" == "asimov-dataset-cli" ]]; then
-              files[x86_64-linux]="asimov-dataset-cli-linux-x86-gnu.gz"
-              files[aarch64-linux]="asimov-dataset-cli-linux-arm-gnu.gz"
-              files[x86_64-darwin]="asimov-dataset-cli-macos-x86.gz"
-              files[aarch64-darwin]="asimov-dataset-cli-macos-arm.gz"
+              platforms=(
+                "x86_64-linux:asimov-dataset-cli-linux-x86-gnu.gz"
+                "aarch64-linux:asimov-dataset-cli-linux-arm-gnu.gz"
+                "x86_64-darwin:asimov-dataset-cli-macos-x86.gz"
+                "aarch64-darwin:asimov-dataset-cli-macos-arm.gz"
+              )
             fi
 
             latest_version=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
 
-            for sys in "${!files[@]}"; do
-              file="${files[$sys]}"
+            for item in "${platforms[@]}"; do
+              sys="${item%%:*}"
+              file="${item##*:}"
               sha_url="https://github.com/asimov-platform/${project}/releases/download/${latest_version}/${file}.sha256"
               sha=$(curl -sL "$sha_url" | cut -d ' ' -f1)
 
-              sed -i -E "s|(${sys}\"[[:space:]]*=.*${binary}.*${file}\\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\\\")[^\"]*(\\\";)|\1${sha}\2|" nix/flake.nix
+              sed -i -E "s|(${sys}\"[[:space:]]*=.*${binary}.*${file}\";[[:space:]]*sha256[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${sha}\2|" nix/flake.nix
             done
 
-            sed -i -E "s|(${binary}[[:space:]]*=\\s*\\\")[^\"]*(\\\";)|\1${latest_version}\2|" nix/flake.nix
+            sed -i -E "s|(${binary}[[:space:]]*=[[:space:]]*\")[^\"]*(\";)|\1${latest_version}\2|" nix/flake.nix
           }
 
           update_entry "asimov-cli"         "asimov"
