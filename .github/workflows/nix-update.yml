@@ -67,7 +67,7 @@ jobs:
           for key in "${!keys[@]}"; do
             project="${keys[$key]}"
             versions[$key]=$(curl -s "https://api.github.com/repos/asimov-platform/${project}/releases/latest" | jq -r .tag_name)
-            sed -i -E "/versions\s*=\s*\{/,/^\s*\}/ s|(${key}\s*=\s*")[^"]*(";)|\1${versions[$key]}\2|" "$flake_file"
+            sed -i -E "/versions\s*=\s*\{/,/^\s*\}/ s|(${key}\s*=\s*\")[^\"]*(\";)|\1${versions[$key]}\2|" "$flake_file"
           done
 
           for platform in "${platforms[@]}"; do
