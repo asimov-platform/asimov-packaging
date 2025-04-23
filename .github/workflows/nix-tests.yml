@@ -65,7 +65,7 @@ jobs:
             source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
           fi
 
-          nix profile install "$GITHUB_WORKSPACE/nix"#default --no-write-lock-file
+          nix profile install "$GITHUB_WORKSPACE/nix#default" --no-write-lock-file
 
           # Verify asimov-cli
           asimov --version
