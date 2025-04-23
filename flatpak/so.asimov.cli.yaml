@@ -27,26 +27,26 @@ modules:
 
       # ASIMOV MODULE CLI
       - type: file
-        url: "https://github.com/asimov-platform/asimov-module-cli/releases/download/25.0.0-dev.2/module-cli-linux-x86-gnu.gz"
+        url: "https://github.com/asimov-platform/asimov-module-cli/releases/download/25.0.0-dev.2/asimov-module-cli-linux-x86-gnu.gz"
         sha256: "d8cb3ad98499d42ec4f89c6669264935a41b0583f6e3995b7e1382b73b654af6"
         only-arches: [x86_64]
         dest-filename: "asimov-module.gz"
 
       - type: file
-        url: "https://github.com/asimov-platform/asimov-module-cli/releases/download/25.0.0-dev.2/module-cli-linux-arm-gnu.gz"
+        url: "https://github.com/asimov-platform/asimov-module-cli/releases/download/25.0.0-dev.2/asimov-module-cli-linux-arm-gnu.gz"
         sha256: "b90bc4cda8f648b5d0f7863f141c9a314b4410edf40fd7b0f5a20c4c9aa01b30"
         only-arches: [aarch64]
         dest-filename: "asimov-module.gz"
 
       # ASIMOV DATASET CLI
       - type: file
-        url: "https://github.com/asimov-platform/asimov-dataset-cli/releases/download/25.0.0-dev.5/asimov-linux-x86-gnu.gz"
+        url: "https://github.com/asimov-platform/asimov-dataset-cli/releases/download/25.0.0-dev.5/asimov-dataset-cli-linux-x86-gnu.gz"
         sha256: "abbcf6612278381d079e85b658cced97b47f71652437fa39e6eb8dc2423d6d6d"
         only-arches: [x86_64]
         dest-filename: "asimov-dataset.gz"
 
       - type: file
-        url: "https://github.com/asimov-platform/asimov-dataset-cli/releases/download/25.0.0-dev.5/asimov-linux-arm-gnu.gz"
+        url: "https://github.com/asimov-platform/asimov-dataset-cli/releases/download/25.0.0-dev.5/asimov-dataset-cli-linux-arm-gnu.gz"
         sha256: "83deb2d62df03a24e5f3965a9a137efe423714c9d852763f6223ff4dc96d33c0"
         only-arches: [aarch64]
         dest-filename: "asimov-dataset.gz"
