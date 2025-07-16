@@ -39,7 +39,7 @@
           doCheck = true;
         };
 
-      version = "25.0.0-dev.7";
+      version = "25.0.0-dev.8";
 
       asimov-x86_64-linux = mkAsimov {
         system = "x86_64-linux";
