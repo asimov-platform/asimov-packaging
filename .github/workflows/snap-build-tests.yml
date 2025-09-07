@@ -25,9 +25,6 @@ jobs:
           - arm-gnu
           - arm-musl
 
-    env:
-      BINARY_NAME: asimov-linux-${{ matrix.arch }}
-
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -40,6 +37,8 @@ jobs:
 
       - name: Build Snap for ${{ matrix.arch }}
         working-directory: snap
+        env:
+          ARCH_NAME: ${{ matrix.arch }}
         run: |
           snapcraft --destructive-mode
           mv *.snap "../asimov-${{ matrix.arch }}.snap"
@@ -55,6 +54,8 @@ jobs:
         run: |
           sudo snap install --dangerous --classic asimov-${{ matrix.arch }}.snap
           asimov --version
+          asimov module --version
+          asimov dataset --version
 
   release:
     needs: build

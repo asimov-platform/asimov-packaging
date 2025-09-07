@@ -80,12 +80,16 @@ After installation, you can run the CLI with:
 
 ```bash
 asimov --help
+asimov module --help
+asimov dataset --help
 ```
 
 To check the installed version:
 
 ```bash
 asimov --version
+asimov module --version
+asimov dataset --version
 ```
 
 ## Troubleshooting
