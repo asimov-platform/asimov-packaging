@@ -1,0 +1,22 @@
+Source: asimov
+Priority: optional
+Section: devel
+Maintainer: Arto Bendiken <arto@asimov.systems>
+Build-Depends:
+ debhelper-compat (= 13),
+ git-buildpackage <!nocheck>,
+ podman | docker.io  <!nocheck>
+Standards-Version: 4.7.0
+Homepage: https://asimov.sh
+Vcs-Git: https://github.com/asimov-platform/asimov-cli.git
+Vcs-Browser: https://github.com/asimov-platform/asimov-cli
+
+Package: asimov
+Architecture: any
+Section: devel
+Multi-Arch: same
+Depends: ${misc:Depends}
+Description: Polyglot development platform for trustworthy, neurosymbolic AI
+ ASIMOV Software Development Kit (SDK) for Linux.
+ .
+ This metapackage installs the full ASIMOV SDK.
