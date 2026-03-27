@@ -14,16 +14,34 @@ parts:
     override-pull: |
       snapcraftctl pull
 
-      FILE="${BINARY_NAME}.gz"
-      wget -O "$FILE" "https://github.com/asimov-platform/asimov-cli/releases/latest/download/$FILE"
-      gunzip "$FILE"
-      chmod +x "${FILE%.gz}"
+      ARCH=${ARCH_NAME:-x86-gnu}
+    
+      declare -A projects=(
+        [asimov]="asimov-cli:asimov-linux-${ARCH}"
+        [asimov-module]="asimov-module-cli:asimov-module-cli-linux-${ARCH}"
+        [asimov-dataset]="asimov-dataset-cli:asimov-dataset-cli-linux-${ARCH}"
+      )
+    
+      for bin in "${!projects[@]}"; do
+        IFS=":" read -r repo binary <<< "${projects[$bin]}"
+        FILE="${binary}.gz"
+        
+        echo "Downloading $FILE from $repo"
+        wget "https://github.com/asimov-platform/${repo}/releases/latest/download/$FILE"
+        gunzip "$FILE"
+        chmod +x "$binary"
+        mv "$binary" "$bin"
+      done
 
     override-build: |
       mkdir -p "$SNAPCRAFT_PART_INSTALL/bin"
-      mv "${BINARY_NAME}" "$SNAPCRAFT_PART_INSTALL/bin/asimov"
+      mv asimov "$SNAPCRAFT_PART_INSTALL/bin/asimov"
+      mv asimov-module "$SNAPCRAFT_PART_INSTALL/bin/asimov-module"
+      mv asimov-dataset "$SNAPCRAFT_PART_INSTALL/bin/asimov-dataset"
       snapcraftctl build
 
 apps:
   asimov:
     command: bin/asimov
+    environment:
+      PATH: "$SNAP/bin:$PATH"
